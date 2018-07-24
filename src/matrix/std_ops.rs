@@ -1,6 +1,7 @@
 use matrix::Matrix;
 use std::ops::Add;
 use std::ops::AddAssign;
+use std::ops::Mul;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
@@ -144,6 +145,50 @@ where
                 .zip(rhs.into_iter())
                 .map(|(a, b)| a - b)
                 .collect(),
+        }
+    }
+}
+
+// Mul implementation
+
+impl<T: Mul<Output = T> + Add<Output = T> + Default + Copy> Mul<Matrix<T>> for Matrix<T> {
+    type Output = Matrix<T>;
+
+    fn mul(self, rhs: Matrix<T>) -> Self::Output {
+        assert!(self.cols == rhs.rows);
+
+        Matrix {
+            rows: self.rows,
+            cols: rhs.cols,
+            data: {
+                let mut data = Vec::with_capacity(self.rows * rhs.cols);
+
+                for row in 0..self.rows {
+                    for col in 0..rhs.cols {
+                        let row = self.row(row).unwrap();
+                        let col = rhs.col(col).unwrap();
+
+                        data.push(
+                            row.zip(col)
+                                .fold(T::default(), |acc, (a, b)| acc + (*a * *b)),
+                        );
+                    }
+                }
+
+                data
+            },
+        }
+    }
+}
+
+impl<T: Mul<Output = T> + Clone> Mul<T> for Matrix<T> {
+    type Output = Matrix<T>;
+
+    fn mul(self, rhs: T) -> Self::Output {
+        Matrix {
+            rows: self.rows,
+            cols: self.cols,
+            data: self.into_iter().map(|n| n * rhs.clone()).collect(),
         }
     }
 }

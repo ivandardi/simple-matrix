@@ -1,4 +1,5 @@
-mod basic_op;
+mod iter;
+mod std_ops;
 
 #[derive(Debug, Clone, Default)]
 pub struct Matrix<T> {
@@ -25,7 +26,7 @@ impl<T> Matrix<T> {
 
     pub fn get(&self, row: usize, col: usize) -> Option<&T> {
         if row < self.rows && col < self.cols {
-            Some(&self.data[row + col * self.rows])
+            Some(&self.data[col + row * self.cols])
         } else {
             None
         }
@@ -33,7 +34,7 @@ impl<T> Matrix<T> {
 
     pub fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut T> {
         if row < self.rows && col < self.cols {
-            Some(&mut self.data[row + col * self.rows])
+            Some(&mut self.data[col + row * self.cols])
         } else {
             None
         }
@@ -48,6 +49,22 @@ impl<T> Matrix<T> {
         }
     }
 
+    pub fn row(&self, row: usize) -> Option<impl Iterator<Item = &T>> {
+        if row < self.rows {
+            Some((0..self.cols).map(move |col| self.get(row, col).unwrap()))
+        } else {
+            None
+        }
+    }
+
+    pub fn col(&self, col: usize) -> Option<impl Iterator<Item = &T>> {
+        if col < self.cols {
+            Some((0..self.rows).map(move |row| self.get(row, col).unwrap()))
+        } else {
+            None
+        }
+    }
+
     pub fn transpose(&self) -> Matrix<T>
     where
         T: Clone,
@@ -57,9 +74,9 @@ impl<T> Matrix<T> {
             cols: self.rows,
             data: {
                 let mut data = Vec::with_capacity(self.cols * self.rows);
-                for i in 0..self.rows {
-                    for j in 0..self.cols {
-                        data.push(self.data[i + j * self.rows].clone())
+                for row in 0..self.rows {
+                    for val in self.row(row).unwrap() {
+                        data.push(val.clone());
                     }
                 }
                 data
@@ -69,34 +86,5 @@ impl<T> Matrix<T> {
 
     pub fn apply<F: Fn(&mut T)>(&mut self, func: F) {
         self.data.iter_mut().for_each(|n| func(n));
-    }
-}
-
-// IntoIterator implementation
-
-impl<T> IntoIterator for Matrix<T> {
-    type Item = T;
-    type IntoIter = ::std::vec::IntoIter<T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.data.into_iter()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a Matrix<T> {
-    type Item = &'a T;
-    type IntoIter = ::std::slice::Iter<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.data.iter()
-    }
-}
-
-impl<'a, T> IntoIterator for &'a mut Matrix<T> {
-    type Item = &'a mut T;
-    type IntoIter = ::std::slice::IterMut<'a, T>;
-
-    fn into_iter(self) -> Self::IntoIter {
-        self.data.iter_mut()
     }
 }
