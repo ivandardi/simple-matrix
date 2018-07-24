@@ -149,9 +149,12 @@ where
     }
 }
 
-// Mul implementation
+// Mul implementation (Matrix * Matrix)
 
-impl<T: Mul<Output = T> + Add<Output = T> + Default + Copy> Mul<Matrix<T>> for Matrix<T> {
+impl<T> Mul<Matrix<T>> for Matrix<T>
+where
+    T: Mul<Output = T> + AddAssign + Copy,
+{
     type Output = Matrix<T>;
 
     fn mul(self, rhs: Matrix<T>) -> Self::Output {
@@ -168,10 +171,15 @@ impl<T: Mul<Output = T> + Add<Output = T> + Default + Copy> Mul<Matrix<T>> for M
                         let row = self.row(row).unwrap();
                         let col = rhs.col(col).unwrap();
 
-                        data.push(
-                            row.zip(col)
-                                .fold(T::default(), |acc, (a, b)| acc + (*a * *b)),
-                        );
+                        let mut iter = row.zip(col);
+                        let (a, b) = iter.next().unwrap();
+                        let mut acc = *a * *b;
+
+                        for (a, b) in iter {
+                            acc += *a * *b;
+                        }
+
+                        data.push(acc);
                     }
                 }
 
@@ -181,6 +189,46 @@ impl<T: Mul<Output = T> + Add<Output = T> + Default + Copy> Mul<Matrix<T>> for M
     }
 }
 
+impl<'a, 'b, T: AddAssign> Mul<&'b Matrix<T>> for &'a Matrix<T>
+where
+    &'a T: Mul<&'b T, Output = T>,
+{
+    type Output = Matrix<T>;
+
+    fn mul(self, rhs: &'b Matrix<T>) -> Self::Output {
+        assert!(self.cols == rhs.rows);
+
+        Matrix {
+            rows: self.rows,
+            cols: rhs.cols,
+            data: {
+                let mut data = Vec::with_capacity(self.rows * rhs.cols);
+
+                for row in 0..self.rows {
+                    for col in 0..rhs.cols {
+                        let row = self.row(row).unwrap();
+                        let col = rhs.col(col).unwrap();
+
+                        let mut iter = row.zip(col);
+                        let (a, b) = iter.next().unwrap();
+                        let mut acc = a * b;
+
+                        for (a, b) in iter {
+                            acc += a * b;
+                        }
+
+                        data.push(acc);
+                    }
+                }
+
+                data
+            },
+        }
+    }
+}
+
+// Mul implementation (scalar * Matrix)
+
 impl<T: Mul<Output = T> + Clone> Mul<T> for Matrix<T> {
     type Output = Matrix<T>;
 
@@ -189,6 +237,21 @@ impl<T: Mul<Output = T> + Clone> Mul<T> for Matrix<T> {
             rows: self.rows,
             cols: self.cols,
             data: self.into_iter().map(|n| n * rhs.clone()).collect(),
+        }
+    }
+}
+
+impl<'a, 'b, T: Clone> Mul<&'b T> for &'a Matrix<T>
+where
+    &'a T: Mul<&'b T, Output = T>,
+{
+    type Output = Matrix<T>;
+
+    fn mul(self, rhs: &'b T) -> Self::Output {
+        Matrix {
+            rows: self.rows,
+            cols: self.cols,
+            data: self.into_iter().map(|n| n * rhs).collect(),
         }
     }
 }

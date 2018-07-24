@@ -1,7 +1,7 @@
 mod iter;
 mod std_ops;
 
-#[derive(Debug, Clone, Default)]
+#[derive(Debug, Clone)]
 pub struct Matrix<T> {
     pub rows: usize,
     pub cols: usize,
@@ -13,6 +13,8 @@ impl<T> Matrix<T> {
     where
         I: IntoIterator<Item = T>,
     {
+        assert!(rows > 0 && cols > 0);
+
         Matrix {
             rows,
             cols,

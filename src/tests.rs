@@ -92,20 +92,6 @@ fn test_transpose() {
         let double = inc.transpose().transpose();
         assert_eq!(inc, double);
     }
-
-    // Test 0-row matrix
-    {
-        let inc = Matrix::new(0, 3, 0..);
-        let double = inc.transpose().transpose();
-        assert_eq!(inc, double);
-    }
-
-    // Test 0-col matrix
-    {
-        let inc = Matrix::new(3, 0, 0..);
-        let double = inc.transpose().transpose();
-        assert_eq!(inc, double);
-    }
 }
 
 #[test]
@@ -144,12 +130,6 @@ fn test_add() {
     // Test rectangle matrix
     test_matrix!(2, 5);
 
-    // Test 0-row matrix
-    test_matrix!(0, 3);
-
-    // Test 0-col matrix
-    test_matrix!(3, 0);
-
     // Test != rows & != cols
     assert_dif_rows_panic!(|a, b| a + b);
     assert_dif_cols_panic!(|a, b| a + b);
@@ -187,12 +167,6 @@ fn test_sub() {
 
     // Test rectangle matrix
     test_matrix!(2, 5);
-
-    // Test 0-row matrix
-    test_matrix!(0, 3);
-
-    // Test 0-col matrix
-    test_matrix!(3, 0);
 
     // Test != rows & != cols
     assert_dif_rows_panic!(|a, b| a - b);
