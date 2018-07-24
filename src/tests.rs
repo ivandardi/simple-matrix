@@ -1,13 +1,49 @@
 #![cfg(test)]
 
 use super::matrix::*;
-use std::panic::catch_unwind;
+
+macro_rules! assert_panic {
+    ($x:expr) => {{
+        let res = ::std::panic::catch_unwind(|| $x);
+        assert!(res.is_err());
+    }};
+}
+
+macro_rules! assert_dif_rows_panic {
+    ($func:expr) => {{
+        let small = Matrix::new(3, 3, 0..);
+        let large = Matrix::new(6, 3, 0..);
+
+        // Reference tests
+        assert_panic!($func(&small, &large));
+        assert_panic!($func(&large, &small));
+
+        // Value tests
+        assert_panic!($func(small.clone(), large.clone()));
+        assert_panic!($func(large, small));
+    }};
+}
+
+macro_rules! assert_dif_cols_panic {
+    ($func:expr) => {{
+        let small = Matrix::new(3, 3, 0..);
+        let large = Matrix::new(3, 6, 0..);
+
+        // Reference tests
+        assert_panic!($func(&small, &large));
+        assert_panic!($func(&large, &small));
+
+        // Value tests
+        assert_panic!($func(small.clone(), large.clone()));
+        assert_panic!($func(large, small));
+    }};
+}
 
 #[test]
 fn test_add() {
     // Test square matrix
     {
-        let inc = Matrix::new(3, 3, 0..9);
+        let inc = Matrix::new(3, 3, 0..);
         let dec = Matrix::new(3, 3, (0..9).map(|n| 8 - n));
 
         let res_copy = &inc + &dec;
@@ -19,31 +55,17 @@ fn test_add() {
         }
     }
 
-    // Test != rows
-    {
-        let small = Matrix::new(3, 3, 0..9);
-        let large = Matrix::new(6, 3, 0..18);
-
-        let res = catch_unwind(|| small + large);
-        assert!(res.is_err());
-    }
-
-    // Test != colums
-    {
-        let small = Matrix::new(3, 3, 0..9);
-        let large = Matrix::new(3, 6, 0..18);
-
-        let res = catch_unwind(|| small + large);
-        assert!(res.is_err());
-    }
+    // Test != rows & != cols
+    assert_dif_rows_panic!(|a, b| a + b);
+    assert_dif_cols_panic!(|a, b| a + b);
 }
 
 #[test]
 fn test_sub() {
     // Test square matrix
     {
-        let inc = Matrix::new(3, 3, 0..9);
-        let dec = Matrix::new(3, 3, 0..9);
+        let inc = Matrix::new(3, 3, 0..);
+        let dec = Matrix::new(3, 3, 0..);
 
         let res_copy = &inc - &dec;
         let res_move = inc - dec;
@@ -54,21 +76,7 @@ fn test_sub() {
         }
     }
 
-    // Test != rows
-    {
-        let small = Matrix::new(3, 3, 0..9);
-        let large = Matrix::new(6, 3, 0..18);
-
-        let res = catch_unwind(|| small - large);
-        assert!(res.is_err());
-    }
-
-    // Test != colums
-    {
-        let small = Matrix::new(3, 3, 0..9);
-        let large = Matrix::new(3, 6, 0..18);
-
-        let res = catch_unwind(|| small - large);
-        assert!(res.is_err());
-    }
+    // Test != rows & != cols
+    assert_dif_rows_panic!(|a, b| a - b);
+    assert_dif_cols_panic!(|a, b| a - b);
 }

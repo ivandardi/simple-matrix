@@ -1,8 +1,8 @@
-// Add implementation
-
 use matrix::Matrix;
 use std::ops::Add;
+use std::ops::AddAssign;
 use std::ops::Sub;
+use std::ops::SubAssign;
 
 // PartialEq implementation
 
@@ -14,19 +14,45 @@ impl<T: PartialEq> PartialEq for Matrix<T> {
     }
 }
 
+// AddAssign implementation
+
+impl<T: AddAssign> AddAssign<Matrix<T>> for Matrix<T> {
+    fn add_assign(&mut self, rhs: Self) {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
+
+        self.into_iter()
+            .zip(rhs.into_iter())
+            .for_each(|(a, b)| *a += b);
+    }
+}
+
+impl<'a, T: AddAssign<&'a T>> AddAssign<&'a Matrix<T>> for Matrix<T> {
+    fn add_assign(&mut self, rhs: &'a Self) {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
+
+        self.into_iter()
+            .zip(rhs.into_iter())
+            .for_each(|(a, b)| *a += b);
+    }
+}
+
+// Add implementation
+
 impl<T: Add<Output = T>> Add for Matrix<T> {
     type Output = Matrix<T>;
 
-    fn add(self, other: Matrix<T>) -> Self::Output {
-        assert!(self.rows == other.rows);
-        assert!(self.cols == other.cols);
+    fn add(self, rhs: Matrix<T>) -> Self::Output {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
 
         Matrix {
             rows: self.rows,
             cols: self.cols,
             data: self
                 .into_iter()
-                .zip(other.into_iter())
+                .zip(rhs.into_iter())
                 .map(|(a, b)| a + b)
                 .collect(),
         }
@@ -39,19 +65,43 @@ where
 {
     type Output = Matrix<T>;
 
-    fn add(self, other: &'b Matrix<T>) -> Self::Output {
-        assert!(self.rows == other.rows);
-        assert!(self.cols == other.cols);
+    fn add(self, rhs: &'b Matrix<T>) -> Self::Output {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
 
         Matrix {
             rows: self.rows,
             cols: self.cols,
             data: self
                 .into_iter()
-                .zip(other.into_iter())
+                .zip(rhs.into_iter())
                 .map(|(a, b)| a + b)
                 .collect(),
         }
+    }
+}
+
+// SubAssign implementation
+
+impl<T: SubAssign> SubAssign<Matrix<T>> for Matrix<T> {
+    fn sub_assign(&mut self, rhs: Self) {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
+
+        self.into_iter()
+            .zip(rhs.into_iter())
+            .for_each(|(a, b)| *a -= b);
+    }
+}
+
+impl<'a, T: SubAssign<&'a T>> SubAssign<&'a Matrix<T>> for Matrix<T> {
+    fn sub_assign(&mut self, rhs: &'a Self) {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
+
+        self.into_iter()
+            .zip(rhs.into_iter())
+            .for_each(|(a, b)| *a -= b);
     }
 }
 
@@ -60,16 +110,16 @@ where
 impl<T: Sub<Output = T>> Sub for Matrix<T> {
     type Output = Matrix<T>;
 
-    fn sub(self, other: Matrix<T>) -> Self::Output {
-        assert!(self.rows == other.rows);
-        assert!(self.cols == other.cols);
+    fn sub(self, rhs: Matrix<T>) -> Self::Output {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
 
         Matrix {
             rows: self.rows,
             cols: self.cols,
             data: self
                 .into_iter()
-                .zip(other.into_iter())
+                .zip(rhs.into_iter())
                 .map(|(a, b)| a - b)
                 .collect(),
         }
@@ -82,16 +132,16 @@ where
 {
     type Output = Matrix<T>;
 
-    fn sub(self, other: &'b Matrix<T>) -> Self::Output {
-        assert!(self.rows == other.rows);
-        assert!(self.cols == other.cols);
+    fn sub(self, rhs: &'b Matrix<T>) -> Self::Output {
+        assert!(self.rows == rhs.rows);
+        assert!(self.cols == rhs.cols);
 
         Matrix {
             rows: self.rows,
             cols: self.cols,
             data: self
                 .into_iter()
-                .zip(other.into_iter())
+                .zip(rhs.into_iter())
                 .map(|(a, b)| a - b)
                 .collect(),
         }
