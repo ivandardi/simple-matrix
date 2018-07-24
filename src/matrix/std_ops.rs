@@ -226,32 +226,3 @@ where
         }
     }
 }
-
-// Mul implementation (scalar * Matrix)
-
-impl<T: Mul<Output = T> + Clone> Mul<T> for Matrix<T> {
-    type Output = Matrix<T>;
-
-    fn mul(self, rhs: T) -> Self::Output {
-        Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            data: self.into_iter().map(|n| n * rhs.clone()).collect(),
-        }
-    }
-}
-
-impl<'a, 'b, T: Clone> Mul<&'b T> for &'a Matrix<T>
-where
-    &'a T: Mul<&'b T, Output = T>,
-{
-    type Output = Matrix<T>;
-
-    fn mul(self, rhs: &'b T) -> Self::Output {
-        Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            data: self.into_iter().map(|n| n * rhs).collect(),
-        }
-    }
-}
