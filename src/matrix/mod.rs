@@ -1,5 +1,6 @@
 mod iter;
 mod std_ops;
+mod from;
 
 #[derive(Debug, Clone)]
 pub struct Matrix<T> {

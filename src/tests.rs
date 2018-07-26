@@ -3,14 +3,14 @@
 use super::matrix::*;
 
 macro_rules! assert_panic {
-    ($x:expr) => {{
+    ($x:expr) => {
         let res = ::std::panic::catch_unwind(|| $x);
         assert!(res.is_err());
-    }};
+    }
 }
 
 macro_rules! assert_dif_rows_panic {
-    ($func:expr) => {{
+    ($func:expr) => {
         let small = Matrix::new(3, 3, 0..);
         let large = Matrix::new(6, 3, 0..);
 
@@ -21,11 +21,11 @@ macro_rules! assert_dif_rows_panic {
         // Value tests
         assert_panic!($func(small.clone(), large.clone()));
         assert_panic!($func(large, small));
-    }};
+    }
 }
 
 macro_rules! assert_dif_cols_panic {
-    ($func:expr) => {{
+    ($func:expr) => {
         let small = Matrix::new(3, 3, 0..);
         let large = Matrix::new(3, 6, 0..);
 
@@ -36,7 +36,7 @@ macro_rules! assert_dif_cols_panic {
         // Value tests
         assert_panic!($func(small.clone(), large.clone()));
         assert_panic!($func(large, small));
-    }};
+    }
 }
 
 #[test]
