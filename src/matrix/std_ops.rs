@@ -5,6 +5,89 @@ use std::ops::Mul;
 use std::ops::Sub;
 use std::ops::SubAssign;
 
+macro_rules! impl_op_basic {
+    ($trait:ident, $func:ident, $op:tt) => {
+        impl<T: $trait<Output = T>> $trait for Matrix<T> {
+            type Output = Matrix<T>;
+
+            fn $func(self, rhs: Self) -> Self::Output {
+                assert!(self.rows == rhs.rows);
+                assert!(self.cols == rhs.cols);
+
+                Matrix {
+                    rows: self.rows,
+                    cols: self.cols,
+                    data: self
+                        .into_iter()
+                        .zip(rhs.into_iter())
+                        .map(|(a, b)| a $op b)
+                        .collect(),
+                }
+            }
+        }
+
+        impl<'a: 'b, 'b, T> $trait for &'a Matrix<T>
+        where
+            &'a T: $trait<&'b T, Output = T>,
+        {
+            type Output = Matrix<T>;
+
+            fn $func(self, rhs: &'b Matrix<T>) -> Self::Output {
+                assert!(self.rows == rhs.rows);
+                assert!(self.cols == rhs.cols);
+
+                Matrix {
+                    rows: self.rows,
+                    cols: self.cols,
+                    data: self
+                        .into_iter()
+                        .zip(rhs.into_iter())
+                        .map(|(a, b)| a $op b)
+                        .collect(),
+                }
+            }
+        }
+    }
+}
+
+macro_rules! impl_op_assign_basic {
+    ($trait:ident, $func:ident, $op:tt) => {
+        impl<T: $trait> $trait for Matrix<T> {
+            fn $func(&mut self, rhs: Self) {
+                assert!(self.rows == rhs.rows);
+                assert!(self.cols == rhs.cols);
+
+                self.into_iter()
+                    .zip(rhs.into_iter())
+                    .for_each(|(a, b)| *a $op b);
+            }
+        }
+
+        impl<'a, T: $trait<&'a T>> $trait<&'a Matrix<T>> for Matrix<T> {
+            fn $func(&mut self, rhs: &'a Self) {
+                assert!(self.rows == rhs.rows);
+                assert!(self.cols == rhs.cols);
+
+                self.into_iter()
+                    .zip(rhs.into_iter())
+                    .for_each(|(a, b)| *a $op b);
+            }
+        }
+    }
+}
+
+macro_rules! impl_op {
+    (Add) => { impl_op_basic!(Add, add, +); };
+    (Sub) => { impl_op_basic!(Sub, sub, -); };
+    (AddAssign) => { impl_op_assign_basic!(AddAssign, add_assign, +=); };
+    (SubAssign) => { impl_op_assign_basic!(SubAssign, sub_assign, -=); };
+}
+
+macro_rules! impl_op_vec {
+    ($trait:ident) => { impl_op!($trait); };
+    ($trait:ident, $($more:ident),*) => { impl_op!($trait); impl_op_vec!($($more),*); };
+}
+
 // PartialEq implementation
 
 impl<T: PartialEq> PartialEq for Matrix<T> {
@@ -15,141 +98,11 @@ impl<T: PartialEq> PartialEq for Matrix<T> {
     }
 }
 
-// AddAssign implementation
+// Macro-ed impl
 
-impl<T: AddAssign> AddAssign<Matrix<T>> for Matrix<T> {
-    fn add_assign(&mut self, rhs: Self) {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
+impl_op_vec!(Add, AddAssign, Sub, SubAssign);
 
-        self.into_iter()
-            .zip(rhs.into_iter())
-            .for_each(|(a, b)| *a += b);
-    }
-}
-
-impl<'a, T: AddAssign<&'a T>> AddAssign<&'a Matrix<T>> for Matrix<T> {
-    fn add_assign(&mut self, rhs: &'a Self) {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
-
-        self.into_iter()
-            .zip(rhs.into_iter())
-            .for_each(|(a, b)| *a += b);
-    }
-}
-
-// Add implementation
-
-impl<T: Add<Output = T>> Add for Matrix<T> {
-    type Output = Matrix<T>;
-
-    fn add(self, rhs: Matrix<T>) -> Self::Output {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
-
-        Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            data: self
-                .into_iter()
-                .zip(rhs.into_iter())
-                .map(|(a, b)| a + b)
-                .collect(),
-        }
-    }
-}
-
-impl<'a: 'b, 'b, T> Add for &'a Matrix<T>
-where
-    &'a T: Add<&'b T, Output = T>,
-{
-    type Output = Matrix<T>;
-
-    fn add(self, rhs: &'b Matrix<T>) -> Self::Output {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
-
-        Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            data: self
-                .into_iter()
-                .zip(rhs.into_iter())
-                .map(|(a, b)| a + b)
-                .collect(),
-        }
-    }
-}
-
-// SubAssign implementation
-
-impl<T: SubAssign> SubAssign<Matrix<T>> for Matrix<T> {
-    fn sub_assign(&mut self, rhs: Self) {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
-
-        self.into_iter()
-            .zip(rhs.into_iter())
-            .for_each(|(a, b)| *a -= b);
-    }
-}
-
-impl<'a, T: SubAssign<&'a T>> SubAssign<&'a Matrix<T>> for Matrix<T> {
-    fn sub_assign(&mut self, rhs: &'a Self) {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
-
-        self.into_iter()
-            .zip(rhs.into_iter())
-            .for_each(|(a, b)| *a -= b);
-    }
-}
-
-// Sub implementation
-
-impl<T: Sub<Output = T>> Sub for Matrix<T> {
-    type Output = Matrix<T>;
-
-    fn sub(self, rhs: Matrix<T>) -> Self::Output {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
-
-        Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            data: self
-                .into_iter()
-                .zip(rhs.into_iter())
-                .map(|(a, b)| a - b)
-                .collect(),
-        }
-    }
-}
-
-impl<'a: 'b, 'b, T> Sub for &'a Matrix<T>
-where
-    &'a T: Sub<&'b T, Output = T>,
-{
-    type Output = Matrix<T>;
-
-    fn sub(self, rhs: &'b Matrix<T>) -> Self::Output {
-        assert!(self.rows == rhs.rows);
-        assert!(self.cols == rhs.cols);
-
-        Matrix {
-            rows: self.rows,
-            cols: self.cols,
-            data: self
-                .into_iter()
-                .zip(rhs.into_iter())
-                .map(|(a, b)| a - b)
-                .collect(),
-        }
-    }
-}
-
-// Mul implementation (Matrix * Matrix)
+// Mul implementation
 
 impl<T> Mul<Matrix<T>> for Matrix<T>
 where

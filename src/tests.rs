@@ -6,7 +6,7 @@ macro_rules! assert_panic {
     ($x:expr) => {
         let res = ::std::panic::catch_unwind(|| $x);
         assert!(res.is_err());
-    }
+    };
 }
 
 macro_rules! assert_dif_rows_panic {
@@ -21,7 +21,7 @@ macro_rules! assert_dif_rows_panic {
         // Value tests
         assert_panic!($func(small.clone(), large.clone()));
         assert_panic!($func(large, small));
-    }
+    };
 }
 
 macro_rules! assert_dif_cols_panic {
@@ -36,7 +36,7 @@ macro_rules! assert_dif_cols_panic {
         // Value tests
         assert_panic!($func(small.clone(), large.clone()));
         assert_panic!($func(large, small));
-    }
+    };
 }
 
 #[test]

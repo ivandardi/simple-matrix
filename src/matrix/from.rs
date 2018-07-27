@@ -11,6 +11,16 @@ macro_rules! impl_from {
     			}
     		}
     	}
+
+    	impl<'a> From<&'a Matrix<$from>> for Matrix<$to> {
+    		fn from(f: &'a Matrix<$from>) -> Self {
+    			Matrix {
+    				rows: f.rows,
+    				cols: f.cols,
+    				data: f.into_iter().map(|n| $to::from(*n)).collect(),
+    			}
+    		}
+    	}
 	};
 
     ($from:ident, $to:ident, $($more:ident),* ) => {
@@ -24,18 +34,27 @@ macro_rules! impl_from {
     		}
     	}
 
+    	impl<'a> From<&'a Matrix<$from>> for Matrix<$to> {
+    		fn from(f: &'a Matrix<$from>) -> Self {
+    			Matrix {
+    				rows: f.rows,
+    				cols: f.cols,
+    				data: f.into_iter().map(|n| $to::from(*n)).collect(),
+    			}
+    		}
+    	}
+
     	impl_from!($from, $($more),*);
     };
 }
 
 // `impl<T, U> From<Matrix<U>> for Matrix<T>` doesn't work,
-// so we'll have to manually tell the compiler 
+// so we'll have to manually tell the compiler
 
 // impl_from!(T, U1, U2, ...);
 // Checked (T, U) couples where U implement From<T> from:
 // https://doc.rust-lang.org/src/core/num/mod.rs.html#4510-4581
-// (that may be macro-ed but I'm not too familiar with them for that)
-
+// (that may be macro-able but I'm not too familiar with them for that)
 
 // Unsigned -> Unsigned
 impl_from!(u8, u16, u32, u64, u128, usize);
