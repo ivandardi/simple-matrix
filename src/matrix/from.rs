@@ -24,26 +24,7 @@ macro_rules! impl_from {
 	};
 
     ($from:ident, $to:ident, $($more:ident),* ) => {
-    	impl From<Matrix<$from>> for Matrix<$to> {
-    		fn from(f: Matrix<$from>) -> Self {
-    			Matrix {
-    				rows: f.rows,
-    				cols: f.cols,
-    				data: f.into_iter().map($to::from).collect(),
-    			}
-    		}
-    	}
-
-    	impl<'a> From<&'a Matrix<$from>> for Matrix<$to> {
-    		fn from(f: &'a Matrix<$from>) -> Self {
-    			Matrix {
-    				rows: f.rows,
-    				cols: f.cols,
-    				data: f.into_iter().map(|n| $to::from(*n)).collect(),
-    			}
-    		}
-    	}
-
+    	impl_from!($from, $to);
     	impl_from!($from, $($more),*);
     };
 }

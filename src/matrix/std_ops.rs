@@ -77,15 +77,15 @@ macro_rules! impl_op_assign_basic {
 }
 
 macro_rules! impl_op {
+    ($trait:ident, $($more:ident),*) => {
+        impl_op!($trait);
+        impl_op!($($more),*);
+    };
+
     (Add) => { impl_op_basic!(Add, add, +); };
     (Sub) => { impl_op_basic!(Sub, sub, -); };
     (AddAssign) => { impl_op_assign_basic!(AddAssign, add_assign, +=); };
     (SubAssign) => { impl_op_assign_basic!(SubAssign, sub_assign, -=); };
-}
-
-macro_rules! impl_op_vec {
-    ($trait:ident) => { impl_op!($trait); };
-    ($trait:ident, $($more:ident),*) => { impl_op!($trait); impl_op_vec!($($more),*); };
 }
 
 // PartialEq implementation
@@ -100,7 +100,7 @@ impl<T: PartialEq> PartialEq for Matrix<T> {
 
 // Macro-ed impl
 
-impl_op_vec!(Add, AddAssign, Sub, SubAssign);
+impl_op!(Add, AddAssign, Sub, SubAssign);
 
 // Mul implementation
 

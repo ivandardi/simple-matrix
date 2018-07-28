@@ -17,9 +17,26 @@ If you are still interested, feel free to continue!
 ## Usage
 Like any *local* cargo library, link it in your `Cargo.toml` file:
 ```toml
+# Example Cargo.toml (replace values with your own)
+
 [dependencies]
 matrix-rs = { path = "path/to/matrix-rs" }
 ```
+
+### Features
+- *Features are extensions of the library left to opt-in by the user.*
+- *They can increase compilation time and/or library size.*
+
+To include a feature, add it to your `Cargo.toml` file:
+```toml
+# Example Cargo.toml with added feature (replace values with your own)
+
+[dependencies]
+matrix-rs = { path = "path/to/matrix-rs", features = ["impl_from"] }
+```
+
+Current available features are listed below with a little description:
+- *impl_from*: Implements the *From* Trait for basic numeric types
 
 ### Tests
 - Run `cargo test` in the root of the project

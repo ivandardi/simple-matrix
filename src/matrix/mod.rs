@@ -1,4 +1,5 @@
-#[cfg(feature = "impl_from")] mod from;
+#[cfg(feature = "impl_from")]
+mod from;
 mod iter;
 mod std_ops;
 
