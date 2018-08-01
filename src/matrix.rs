@@ -5,15 +5,16 @@ mod std_ops;
 
 use std::ops::Deref;
 
-#[derive(Debug, Clone)]
+/// A 2-Dimensional, non-resisable container.
+#[derive(Clone, Debug, Hash, Eq, PartialOrd)]
 pub struct Matrix<T> {
-    pub rows: usize,
-    pub cols: usize,
+    rows: usize,
+    cols: usize,
     data: Vec<T>,
 }
 
 impl<T> Matrix<T> {
-    /// Constructs a new, non-empty Matrix<T> where values are set to `T::default`.  
+    /// Constructs a new, non-empty Matrix<T> where cells are set to `T::default`.  
     /// Use `Matrix::from_iter` if you want to set the matrix from an iterator.
     /// # Panics
     /// Panics if either `rows` or `cols` are equal to `0`
@@ -23,8 +24,8 @@ impl<T> Matrix<T> {
         Matrix::from_iter(rows, cols, (0..).map(|_| T::default()))
     }
 
-    /// Constructs a new, non-empty Matrix<T> where values are set from an iterator.  
-    /// The matrix values are set row by row.
+    /// Constructs a new, non-empty Matrix<T> where cells are set from an iterator.  
+    /// The matrix cells are set row by row.
     /// # Panics
     /// Panics if either `rows` or `cols` are equal to `0`
     pub fn from_iter(rows: usize, cols: usize, data: impl IntoIterator<Item = T>) -> Matrix<T> {
@@ -41,6 +42,18 @@ impl<T> Matrix<T> {
         }
     }
 
+    /// Returns the number of rows in the matrix.
+    pub fn rows(&self) -> usize {
+        self.rows
+    }
+
+    /// Returns the number of columns in the matrix.
+    pub fn cols(&self) -> usize {
+        self.cols
+    }
+
+    /// Try to get a reference to the value at given row & column.  
+    /// Returns `None` if `row` or `col` is outside of the matrix.
     pub fn get(&self, row: usize, col: usize) -> Option<&T> {
         if row < self.rows && col < self.cols {
             Some(&self.data[col + row * self.cols])
@@ -49,6 +62,8 @@ impl<T> Matrix<T> {
         }
     }
 
+    /// Try to get a mutable reference to the cell at given row & column.  
+    /// Returns `None` if `row` or `col` is outside of the matrix.
     pub fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut T> {
         if row < self.rows && col < self.cols {
             Some(&mut self.data[col + row * self.cols])
@@ -57,6 +72,9 @@ impl<T> Matrix<T> {
         }
     }
 
+    /// Try to set the cell at given row & column to the given value.  
+    /// Returns `false` if `row` or `col` is outside of the matrix.  
+    /// Returns `true` if the cell has been modified.
     pub fn set(&mut self, row: usize, col: usize, value: T) -> bool {
         if let Some(cell) = self.get_mut(row, col) {
             *cell = value;
@@ -66,7 +84,9 @@ impl<T> Matrix<T> {
         }
     }
 
-    pub fn row(&self, row: usize) -> Option<impl Iterator<Item = &T>> {
+    /// Try to get an iterator of all cells of the requested row.  
+    /// Returns `None` if given row is outside of the matrix.
+    pub fn get_row(&self, row: usize) -> Option<impl Iterator<Item = &T>> {
         if row < self.rows {
             Some((0..self.cols).map(move |col| self.get(row, col).unwrap()))
         } else {
@@ -74,7 +94,9 @@ impl<T> Matrix<T> {
         }
     }
 
-    pub fn col(&self, col: usize) -> Option<impl Iterator<Item = &T>> {
+    /// Try to get an iterator of all cells of the requested column.  
+    /// Returns `None` if given row is outside of the matrix.
+    pub fn get_col(&self, col: usize) -> Option<impl Iterator<Item = &T>> {
         if col < self.cols {
             Some((0..self.rows).map(move |row| self.get(row, col).unwrap()))
         } else {
@@ -82,6 +104,7 @@ impl<T> Matrix<T> {
         }
     }
 
+    /// Take a *M*x*N* Matrix and construct the transposed *N*x*M* Matrix.
     pub fn transpose(&self) -> Matrix<T>
     where
         T: Clone,
@@ -92,7 +115,7 @@ impl<T> Matrix<T> {
             data: {
                 let mut data = Vec::with_capacity(self.cols * self.rows);
                 for row in 0..self.rows {
-                    for val in self.row(row).unwrap() {
+                    for val in self.get_row(row).unwrap() {
                         data.push(val.clone());
                     }
                 }
@@ -101,7 +124,10 @@ impl<T> Matrix<T> {
         }
     }
 
-    pub fn apply<F: Fn(&mut T)>(&mut self, func: F) {
+    /// Apply a function to all cells of the matrix.  
+    /// Cells are provided as mutable references to the function,
+    /// and can therefore be modified.
+    pub fn apply<F: FnMut(&mut T)>(&mut self, mut func: F) {
         self.data.iter_mut().for_each(|n| func(n));
     }
 }

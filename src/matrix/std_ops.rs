@@ -121,8 +121,8 @@ where
 
                 for row in 0..self.rows {
                     for col in 0..rhs.cols {
-                        let row = self.row(row).unwrap();
-                        let col = rhs.col(col).unwrap();
+                        let row = self.get_row(row).unwrap();
+                        let col = rhs.get_col(col).unwrap();
 
                         let mut iter = row.zip(col);
                         let (a, b) = iter.next().unwrap();
@@ -159,8 +159,8 @@ where
 
                 for row in 0..self.rows {
                     for col in 0..rhs.cols {
-                        let row = self.row(row).unwrap();
-                        let col = rhs.col(col).unwrap();
+                        let row = self.get_row(row).unwrap();
+                        let col = rhs.get_col(col).unwrap();
 
                         let mut iter = row.zip(col);
                         let (a, b) = iter.next().unwrap();
