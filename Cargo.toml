@@ -1,4 +1,7 @@
+cargo-features = ["edition"]
+
 [package]
+edition = '2018'
 name = "matrix-rs"
 version = "0.1.0"
 authors = ["Nicolas Mémeint <nicolas.memeint@gmail.com>"]

@@ -1,4 +1,4 @@
-use matrix::Matrix;
+use super::Matrix;
 use std::ops::Add;
 use std::ops::AddAssign;
 use std::ops::Mul;
@@ -40,8 +40,8 @@ macro_rules! impl_op_basic {
                     rows: self.rows,
                     cols: self.cols,
                     data: self
-                        .into_iter()
-                        .zip(rhs.into_iter())
+                        .iter()
+                        .zip(rhs.iter())
                         .map(|(a, b)| a $op b)
                         .collect(),
                 }
@@ -57,7 +57,7 @@ macro_rules! impl_op_assign_basic {
                 assert!(self.rows == rhs.rows);
                 assert!(self.cols == rhs.cols);
 
-                self.into_iter()
+                self.data.iter_mut()
                     .zip(rhs.into_iter())
                     .for_each(|(a, b)| *a $op b);
             }
@@ -68,8 +68,8 @@ macro_rules! impl_op_assign_basic {
                 assert!(self.rows == rhs.rows);
                 assert!(self.cols == rhs.cols);
 
-                self.into_iter()
-                    .zip(rhs.into_iter())
+                self.data.iter_mut()
+                    .zip(rhs.iter())
                     .for_each(|(a, b)| *a $op b);
             }
         }
@@ -94,7 +94,7 @@ impl<T: PartialEq> PartialEq for Matrix<T> {
     fn eq(&self, rhs: &Self) -> bool {
         self.rows == rhs.rows
             && self.cols == rhs.cols
-            && self.into_iter().zip(rhs.into_iter()).all(|(a, b)| *a == *b)
+            && self.iter().zip(rhs.iter()).all(|(a, b)| *a == *b)
     }
 }
 

@@ -1,9 +1,12 @@
 # Matrix-rs: A generic matrix library in Rust
 
 ## Who, What & Why?
-- I am a French student that is interested in programming (and in Rust since a couple months).
-- It is a matrix library written that has no intention to be *the best*.
-- To be better in Rust and discover some of its numerous aspects.
+- *Who?*
+	- I am a French student that is interested in programming (and in Rust since a couple months).
+- *What?*
+	- It is a matrix library in Rust that has no intention to be *the best*.
+- *Why?*
+	- To be better in Rust and discover some of its numerous aspects.
 
 ### Disclaimer
 This has no intention to be a somewhat *professional library*, so expect:

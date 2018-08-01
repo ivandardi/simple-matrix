@@ -1,4 +1,4 @@
-use matrix::Matrix;
+use super::Matrix;
 
 // IntoIterator implementation
 

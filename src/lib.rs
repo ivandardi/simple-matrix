@@ -2,4 +2,4 @@
 mod matrix;
 mod tests;
 
-pub use matrix::*;
+pub use crate::matrix::*;

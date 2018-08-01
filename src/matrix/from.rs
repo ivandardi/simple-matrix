@@ -1,4 +1,4 @@
-use matrix::Matrix;
+use super::Matrix;
 
 macro_rules! impl_from {
 	($from:ident, $to:ident) => {

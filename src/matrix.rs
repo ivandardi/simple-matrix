@@ -3,6 +3,8 @@ mod from;
 mod iter;
 mod std_ops;
 
+use std::ops::Deref;
+
 #[derive(Debug, Clone)]
 pub struct Matrix<T> {
     pub rows: usize,
@@ -11,10 +13,7 @@ pub struct Matrix<T> {
 }
 
 impl<T> Matrix<T> {
-    pub fn new<I>(rows: usize, cols: usize, data: I) -> Matrix<T>
-    where
-        I: IntoIterator<Item = T>,
-    {
+    pub fn new(rows: usize, cols: usize, data: impl IntoIterator<Item = T>) -> Matrix<T> {
         assert!(rows > 0 && cols > 0);
 
         Matrix {
@@ -90,5 +89,13 @@ impl<T> Matrix<T> {
 
     pub fn apply<F: Fn(&mut T)>(&mut self, func: F) {
         self.data.iter_mut().for_each(|n| func(n));
+    }
+}
+
+impl<T> Deref for Matrix<T> {
+    type Target = Vec<T>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.data
     }
 }
