@@ -13,7 +13,21 @@ pub struct Matrix<T> {
 }
 
 impl<T> Matrix<T> {
-    pub fn new(rows: usize, cols: usize, data: impl IntoIterator<Item = T>) -> Matrix<T> {
+    /// Constructs a new, non-empty Matrix<T> where values are set to `T::default`.  
+    /// Use `Matrix::from_iter` if you want to set the matrix from an iterator.
+    /// # Panics
+    /// Panics if either `rows` or `cols` are equal to `0`
+    pub fn new(rows: usize, cols: usize) -> Matrix<T> 
+    where
+        T: Default {
+        Matrix::from_iter(rows, cols, (0..).map(|_| T::default()))
+    }
+
+    /// Constructs a new, non-empty Matrix<T> where values are set from an iterator.  
+    /// The matrix values are set row by row.
+    /// # Panics
+    /// Panics if either `rows` or `cols` are equal to `0`
+    pub fn from_iter(rows: usize, cols: usize, data: impl IntoIterator<Item = T>) -> Matrix<T> {
         assert!(rows > 0 && cols > 0);
 
         Matrix {
