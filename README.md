@@ -43,6 +43,7 @@ Current available features are listed below with a little description:
 
 ### Tests
 - Run `cargo test` in the root of the project
+- Documentation tests are disabled because rustdoc does not seem to work with edition 2018
 
 ## Want to participate?
 Create a new issue or a pull request and I will look at them (as soon as I can).

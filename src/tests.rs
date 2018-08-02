@@ -48,7 +48,7 @@ fn test_get() {
         for col in 0..5 {
             let val = inc.get(row, col);
             assert!(val.is_some());
-            assert_eq!(*val.unwrap(), col + row * inc.cols);
+            assert_eq!(*val.unwrap(), col + row * inc.cols());
         }
     }
 
@@ -96,6 +96,10 @@ fn test_transpose() {
 
 #[test]
 fn test_add() {
+    let mut mat: Matrix<usize> = Matrix::from_iter(3, 3, 0..);
+    let mut count = 0;
+    mat.apply(|n| count += *n);
+
     macro_rules! test_matrix {
         ($rows:expr, $cols:expr) => {{
             let len = $rows * $cols;
