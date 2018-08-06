@@ -88,16 +88,6 @@ macro_rules! impl_op {
     (SubAssign) => { impl_op_assign_basic!(SubAssign, sub_assign, -=); };
 }
 
-// PartialEq implementation
-
-impl<T: PartialEq> PartialEq for Matrix<T> {
-    fn eq(&self, rhs: &Self) -> bool {
-        self.rows == rhs.rows
-            && self.cols == rhs.cols
-            && self.iter().zip(rhs.iter()).all(|(a, b)| *a == *b)
-    }
-}
-
 // Macro-ed impl
 
 impl_op!(Add, AddAssign, Sub, SubAssign);

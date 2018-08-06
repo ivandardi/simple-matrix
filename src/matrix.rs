@@ -6,7 +6,7 @@ mod std_ops;
 use std::ops::Deref;
 
 /// A 2-Dimensional, non-resisable container.
-#[derive(Clone, Debug, Hash, Eq, PartialOrd)]
+#[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd)]
 pub struct Matrix<T> {
     rows: usize,
     cols: usize,
@@ -67,7 +67,7 @@ impl<T> Matrix<T> {
     /// # Examples
     /// ```text
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
-    /// 
+    ///
     /// assert_eq!(mat.rows(), 3);
     /// ```
     pub fn rows(&self) -> usize {
@@ -79,7 +79,7 @@ impl<T> Matrix<T> {
     /// # Examples
     /// ```text
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
-    /// 
+    ///
     /// assert_eq!(mat.cols(), 6);
     /// ```
     pub fn cols(&self) -> usize {
@@ -92,7 +92,7 @@ impl<T> Matrix<T> {
     /// # Examples
     /// ```text
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
-    /// 
+    ///
     /// assert_eq!(mat.get(0, 0).unwrap(), 0);
     /// assert_eq!(mat.get(2, 5).unwrap(), 17);
     ///
@@ -154,7 +154,7 @@ impl<T> Matrix<T> {
     /// # Examples
     /// ```text
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
-    /// 
+    ///
     /// assert_eq!(mat.get_row(1).unwrap(), vec![6, 7, 8, 9, 10, 11]);
     ///
     /// assert!(mat.get_row(5).is_err());
@@ -173,7 +173,7 @@ impl<T> Matrix<T> {
     /// # Examples
     /// ```text
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
-    /// 
+    ///
     /// assert_eq!(mat.get_col(1).unwrap(), vec![1, 7, 13]);
     ///
     /// assert!(mat.get_col(10).is_err());
@@ -195,7 +195,7 @@ impl<T> Matrix<T> {
     ///
     /// assert_eq!(mat.rows(), mat_t.cols());
     /// assert_eq!(mat.cols(), mat_t.rows());
-    /// 
+    ///
     /// assert_eq!(mat.get(0, 0).unwrap(), mat_t.get(0, 0).unwrap());
     /// assert_eq!(mat.get(1, 2).unwrap(), mat_t.get(2, 1).unwrap());
     /// ```
