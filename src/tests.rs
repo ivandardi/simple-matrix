@@ -96,10 +96,6 @@ fn test_transpose() {
 
 #[test]
 fn test_add() {
-    let mut mat: Matrix<usize> = Matrix::from_iter(3, 3, 0..);
-    let mut count = 0;
-    mat.apply(|n| count += *n);
-
     macro_rules! test_matrix {
         ($rows:expr, $cols:expr) => {{
             let len = $rows * $cols;
