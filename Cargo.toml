@@ -9,4 +9,5 @@ authors = ["Nicolas Mémeint <nicolas.memeint@gmail.com>"]
 [features]
 impl_from = []
 
-[dependencies]
+[dev-dependencies]
+quickcheck = "0.6"
