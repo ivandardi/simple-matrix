@@ -62,6 +62,5 @@ let dot = mat * mat_t;
 #![deny(missing_docs)]
 
 mod matrix;
-mod tests;
 
 pub use crate::matrix::*;

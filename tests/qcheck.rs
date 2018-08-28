@@ -1,4 +1,4 @@
-use crate::Matrix;
+use matrix_rs::Matrix;
 use quickcheck::{quickcheck, Arbitrary, Gen};
 
 const RANGE: i32 = 100000; // No over/under-flow checking for now
@@ -70,7 +70,7 @@ fn identity(length: usize) -> Matrix<i32> {
 }
 
 quickcheck! {
-    fn get(t: AMatrix<i32>) -> bool {
+    fn qcheck_get(t: AMatrix<i32>) -> bool {
         let a = t.0;
 
         // In-bounds
@@ -99,7 +99,7 @@ quickcheck! {
         true
     }
 
-    fn set(t: AMatrix<i32>, v: i32) -> bool {
+    fn qcheck_set(t: AMatrix<i32>, v: i32) -> bool {
         let mut a = t.0;
 
         // In-bounds
@@ -128,7 +128,7 @@ quickcheck! {
         true
     }
 
-    fn add(t: A3Matrix<i32>) -> bool {
+    fn qcheck_add(t: A3Matrix<i32>) -> bool {
         let a = &t.0;
         let b = &t.1;
         let c = &t.2;
@@ -139,7 +139,7 @@ quickcheck! {
         && (&(a + zero) == a)
     }
 
-    fn sub(t: A2Matrix<i32>) -> bool {
+    fn qcheck_sub(t: A2Matrix<i32>) -> bool {
         let a = &t.0;
         let b = &t.1;
         let zero = &Matrix::new(a.rows(), a.cols());
@@ -149,7 +149,7 @@ quickcheck! {
         && (&(a - zero) == a)
     }
 
-    fn mul(t: AMatrix<i32>) -> bool {
+    fn qcheck_mul(t: AMatrix<i32>) -> bool {
         // Incomplete
 
         let zero = |r,c| Matrix::new(r, c);
