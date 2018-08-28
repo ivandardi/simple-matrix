@@ -1,5 +1,5 @@
-use matrix_rs::Matrix;
 use quickcheck::{quickcheck, Arbitrary, Gen};
+use simple_matrix::Matrix;
 
 const RANGE: i32 = 100000; // No over/under-flow checking for now
 
@@ -150,14 +150,14 @@ quickcheck! {
     }
 
     fn qcheck_mul(t: AMatrix<i32>) -> bool {
-        // Incomplete
-
         let zero = |r,c| Matrix::new(r, c);
 
         let a = &t.0;
         let ident1 = &identity(a.cols());
+        let ident2 = &identity(a.rows());
 
         (a * &zero(a.cols(), 2) == zero(a.rows(), 2))
         && (&(a * ident1) == a)
+        && (&(ident2 * a) == a)
     }
 }

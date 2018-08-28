@@ -12,14 +12,14 @@
 	- To create a simple and reliable matrix library.
 
 ### Disclaimer
-This crate is not mature enough for *professional use*, check alternatives like [cgmath](https://github.com/brendanzab/cgmath) or [nalgebra](https://github.com/sebcrozet/nalgebra) if you are in that case.
+This crate should not be considered mature enough for *professional use*, check alternatives like [cgmath](https://github.com/brendanzab/cgmath) or [nalgebra](https://github.com/sebcrozet/nalgebra) if you are in that case.
 
 If you are still interested, feel free to continue!
 
 ## Usage 
 Link it in your project's `Cargo.toml` file:
 ```toml
-# Example Cargo.toml (replace values with your own)
+# Example Cargo.toml
 
 [dependencies]
 simple-matrix = "0.1"

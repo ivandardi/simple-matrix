@@ -2,18 +2,43 @@
 # Matrix-rs: A generic matrix library in Rust
 Matrix-rs is a simple matrix library designed to be easy to use.
 
-# Usage
-This crate **is not** on crates.io and must be copied to local storage.  
-Then, link it in your project's `Cargo.toml` file:
+# Disclaimer
+This crate should not be considered mature enough for *professional use*, check alternatives like [cgmath](https://github.com/brendanzab/cgmath) or [nalgebra](https://github.com/sebcrozet/nalgebra) if you are in that case.
+
+If you are still interested, feel free to continue!
+
+# Usage 
+Link it in your project's `Cargo.toml` file:
 ```toml
-# Example Cargo.toml (replace values with your own)
+# Example Cargo.toml
 
 [dependencies]
-matrix-rs = { path = "path/to/matrix-rs" }
+simple-matrix = "0.1"
+```
+
+Then, you can use it in your project:
+## Rust 2015
+```rust
+// Specify the extern crate in your lib.rs or main.rs
+extern crate simple_matrix;
+
+// You can now use it
+use simple_matrix::Matrix;
+
+let mat: Matrix<i32> = Matrix::new();
+```
+
+## Rust 2018
+```rust
+// No need to specify an extern crate
+// You can use it directly
+use simple_matrix::Matrix;
+
+let mat: Matrix<i32> = Matrix::new();
 ```
 
 # Example: Basic matrix usage
-```text
+```rust
 // Create a matrix of default cells
 let zero: Matrix<u32> = Matrix::new(3, 3);
 
@@ -48,14 +73,35 @@ for val in add {
 ```
 
 # Example: Dot product
-```text
-let mat: Matrix<usize> = Matrix::from_iter(2, 4, 0..);
+```rust
+let mat: Matrix<f64> = Matrix::from_iter(2, 4, 0..);
 
 // Construct the transposed matrix
 let mat_t = mat.transpose();
 
 // Construct the dot product
 let dot = mat * mat_t;
+```
+
+# Features
+- *Features are extensions of the library left to opt-in by the user.*
+- *They can increase compilation time and library size.*
+
+To include a feature, add it to your `Cargo.toml` file:
+```toml
+# Example Cargo.toml with added feature (replace values with your own)
+
+[dependencies]
+simple-matrix = { version = "0.1", features = ["impl_from"] }
+```
+
+Current available features are listed below with a little description:
+## impl_from
+Implements the *From* Trait for basic numeric types.
+
+```rust
+let m1: Matrix<i8> = Matrix::new(3, 5);
+let m2: Matrix<i64> = m1.into();
 ```
 */
 

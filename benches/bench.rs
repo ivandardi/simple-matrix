@@ -1,7 +1,7 @@
 use criterion::{black_box, criterion_group, criterion_main, Criterion};
-use matrix_rs::Matrix;
 use rand::distributions::{Distribution, Standard};
 use rand::prelude::random;
+use simple_matrix::Matrix;
 
 fn randomize<T>(m: &mut Matrix<T>)
 where
