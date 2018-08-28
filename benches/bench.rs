@@ -66,12 +66,102 @@ fn bench_get_col_large(c: &mut Criterion) {
     });
 }
 
+fn bench_transpose_small(c: &mut Criterion) {
+    let m = matrix_small();
+    c.bench_function("transpose_small", move |b| {
+        b.iter(|| {
+            black_box(m.transpose());
+        })
+    });
+}
+
+fn bench_transpose_large(c: &mut Criterion) {
+    let m = matrix_large();
+    c.bench_function("transpose_large", move |b| {
+        b.iter(|| {
+            black_box(m.transpose());
+        })
+    });
+}
+
+fn bench_add_small(c: &mut Criterion) {
+    let m1 = matrix_small();
+    let m2 = matrix_small();
+    c.bench_function("add_small", move |b| {
+        b.iter(|| {
+            black_box(&m1 + &m2);
+        })
+    });
+}
+
+fn bench_add_large(c: &mut Criterion) {
+    let m1 = matrix_large();
+    let m2 = matrix_large();
+    c.bench_function("add_large", move |b| {
+        b.iter(|| {
+            black_box(&m1 + &m2);
+        })
+    });
+}
+
+fn bench_sub_small(c: &mut Criterion) {
+    let m1 = matrix_small();
+    let m2 = matrix_small();
+    c.bench_function("sub_small", move |b| {
+        b.iter(|| {
+            black_box(&m1 - &m2);
+        })
+    });
+}
+
+fn bench_sub_large(c: &mut Criterion) {
+    let m1 = matrix_large();
+    let m2 = matrix_large();
+    c.bench_function("sub_large", move |b| {
+        b.iter(|| {
+            black_box(&m1 - &m2);
+        })
+    });
+}
+
+fn bench_mul_small(c: &mut Criterion) {
+    let m1 = matrix_small();
+    let m2 = matrix_small();
+    c.bench_function("mul_small", move |b| {
+        b.iter(|| {
+            black_box(&m1 * &m2);
+        })
+    });
+}
+
+fn bench_mul_large(c: &mut Criterion) {
+    let m1 = matrix_large();
+    let m2 = matrix_large();
+    c.bench_function("mul_large", move |b| {
+        b.iter(|| {
+            black_box(&m1 * &m2);
+        })
+    });
+}
+
 criterion_group!(
-    bench_iter,
+    bench_basic,
     bench_get_row_small,
     bench_get_row_large,
     bench_get_col_small,
-    bench_get_col_large
+    bench_get_col_large,
+    bench_transpose_small,
+    bench_transpose_large,
 );
 
-criterion_main!(bench_iter);
+criterion_group!(
+    bench_std_ops,
+    bench_add_small,
+    bench_add_large,
+    bench_sub_small,
+    bench_sub_large,
+    bench_mul_small,
+    bench_mul_large,
+);
+
+criterion_main!(bench_basic, bench_std_ops);
