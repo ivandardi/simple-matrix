@@ -9,7 +9,7 @@ If you are still interested, feel free to continue!
 
 # Usage 
 Link it in your project's `Cargo.toml` file:
-```toml
+```text
 # Example Cargo.toml
 
 [dependencies]
@@ -18,7 +18,7 @@ simple-matrix = "0.1"
 
 Then, you can use it in your project:
 ## Rust 2015
-```rust
+```
 // Specify the extern crate in your lib.rs or main.rs
 extern crate simple_matrix;
 
@@ -29,7 +29,7 @@ let mat: Matrix<i32> = Matrix::new();
 ```
 
 ## Rust 2018
-```rust
+```
 // No need to specify an extern crate
 // You can use it directly
 use simple_matrix::Matrix;
@@ -38,7 +38,7 @@ let mat: Matrix<i32> = Matrix::new();
 ```
 
 # Example: Basic matrix usage
-```rust
+```
 // Create a matrix of default cells
 let zero: Matrix<u32> = Matrix::new(3, 3);
 
@@ -73,7 +73,7 @@ for val in add {
 ```
 
 # Example: Dot product
-```rust
+```
 let mat: Matrix<f64> = Matrix::from_iter(2, 4, 0..);
 
 // Construct the transposed matrix
@@ -88,7 +88,7 @@ let dot = mat * mat_t;
 - *They can increase compilation time and library size.*
 
 To include a feature, add it to your `Cargo.toml` file:
-```toml
+```text
 # Example Cargo.toml with added feature (replace values with your own)
 
 [dependencies]
@@ -99,7 +99,7 @@ Current available features are listed below with a little description:
 ## impl_from
 Implements the *From* Trait for basic numeric types.
 
-```rust
+```
 let m1: Matrix<i8> = Matrix::new(3, 5);
 let m2: Matrix<i64> = m1.into();
 ```
