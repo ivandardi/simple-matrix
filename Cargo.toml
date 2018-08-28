@@ -10,6 +10,7 @@ authors = ["Nicolas Mémeint <nicolas.memeint@gmail.com>"]
 impl_from = []
 
 [dev-dependencies]
+rand = "0.5"
 criterion = "0.2"
 quickcheck = "0.6"
 
