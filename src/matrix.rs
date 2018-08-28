@@ -21,7 +21,7 @@ impl<T> Matrix<T> {
     /// Panics if either `rows` or `cols` are equal to `0`
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mut mat: Matrix<i32> = Matrix::new(3, 6);
     /// ```
     pub fn new(rows: usize, cols: usize) -> Matrix<T>
@@ -41,7 +41,7 @@ impl<T> Matrix<T> {
     /// Panics if the iterator does not have `rows * cols` values
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     ///
     /// assert_eq!(mat.get(0, 0).unwrap(), 0);
@@ -65,7 +65,7 @@ impl<T> Matrix<T> {
     /// Returns the number of rows in the matrix.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     ///
     /// assert_eq!(mat.rows(), 3);
@@ -77,7 +77,7 @@ impl<T> Matrix<T> {
     /// Returns the number of columns in the matrix.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     ///
     /// assert_eq!(mat.cols(), 6);
@@ -90,7 +90,7 @@ impl<T> Matrix<T> {
     /// Returns `None` if `row` or `col` is outside of the matrix.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     ///
     /// assert_eq!(mat.get(0, 0).unwrap(), 0);
@@ -110,7 +110,7 @@ impl<T> Matrix<T> {
     /// Returns `None` if `row` or `col` is outside of the matrix.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mut mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     /// assert_eq!(mat.get(0, 0).unwrap(), 0);
     ///
@@ -132,7 +132,7 @@ impl<T> Matrix<T> {
     /// Returns `true` if the cell has been modified.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mut mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     /// assert_eq!(mat.get(0, 0).unwrap(), 0);
     ///
@@ -152,7 +152,7 @@ impl<T> Matrix<T> {
     /// Returns `None` if given row is outside of the matrix.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     ///
     /// assert_eq!(mat.get_row(1).unwrap(), vec![6, 7, 8, 9, 10, 11]);
@@ -171,7 +171,7 @@ impl<T> Matrix<T> {
     /// Returns `None` if given row is outside of the matrix.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     ///
     /// assert_eq!(mat.get_col(1).unwrap(), vec![1, 7, 13]);
@@ -189,7 +189,7 @@ impl<T> Matrix<T> {
     /// Take a *M*x*N* Matrix and construct the transposed *N*x*M* Matrix.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     /// let mat_t = mat.transpose();
     ///
@@ -223,7 +223,7 @@ impl<T> Matrix<T> {
     /// if you want to modify the cells, use `apply_mut`.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// // Get the sum of all cells
     /// let mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     /// let mut sum = 0;
@@ -240,7 +240,7 @@ impl<T> Matrix<T> {
     /// and can therefore be modified.
     ///
     /// # Examples
-    /// ```text
+    /// ```rust
     /// // Modify all cells with a function
     /// let mut mat: Matrix<usize> = Matrix::new(3, 6, 0..);
     /// mat.apply_mut(|n| n *= 2);
