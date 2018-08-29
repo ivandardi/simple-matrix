@@ -1,5 +1,8 @@
 # Simple-Matrix: A simple generic matrix library in Rust
 
+[![crates.io](https://img.shields.io/crates/v/simple-matrix.svg)](https://crates.io/crates/simple-matrix)
+[![docs.rs](https://docs.rs/simple-matrix/badge.svg)](https://docs.rs/simple-matrix)
+
 ## Who, What & Why?
 - *Who?*
 	- I am a French student that is interested in programming (and in Rust for a couple months).
