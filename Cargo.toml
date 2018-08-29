@@ -3,7 +3,7 @@ cargo-features = ["edition"]
 [package]
 edition = '2018'
 name = "simple-matrix"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Nicolas Mémeint <nicolas.memeint@gmail.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
@@ -13,6 +13,9 @@ homepage = "https://github.com/NicolasMemeint/simple-matrix"
 description = "A simple generic N-dimensional matrix library"
 categories = ["data-structures"]
 keywords = ["simple", "matrix", "matrices", "dimension"]
+
+[package.metadata.docs.rs]
+rustdoc-args = [ "--edition=2018" ]
 
 [lib]
 doctest = false
