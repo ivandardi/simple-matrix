@@ -3,7 +3,7 @@ cargo-features = ["edition"]
 [package]
 edition = '2018'
 name = "simple-matrix"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Nicolas Mémeint <nicolas.memeint@gmail.com>"]
 license = "MIT OR Apache-2.0"
 readme = "README.md"
