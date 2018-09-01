@@ -128,6 +128,158 @@ quickcheck! {
         true
     }
 
+    fn qcheck_index_tuple_get(t: AMatrix<i32>) -> bool {
+        let a = t.0;
+
+        // In-bounds
+        for r in 0..a.rows() {
+            for c in 0..a.cols() {
+                let _ = a[(r, c)];
+            }
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_tuple_oob_col_get(t: AMatrix<i32>) -> bool {
+        let a = t.0;
+
+        // Out-of-bounds (column)
+        for r in 0..a.rows() {
+            let _ = a[(r, a.cols())];
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_tuple_oob_row_get(t: AMatrix<i32>) -> bool {
+        let a = t.0;
+
+        // Out-of-bounds (row)
+        for c in 0..a.cols() {
+            let _ = a[(a.rows(), c)];
+        }
+
+        true
+    }
+
+    fn qcheck_index_tuple_set(t: AMatrix<i32>, v: i32) -> bool {
+        let mut a = t.0;
+
+        // In-bounds
+        for r in 0..a.rows() {
+            for c in 0..a.cols() {
+                a[(r, c)] = v;
+            }
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_tuple_oob_col_set(t: AMatrix<i32>) -> bool {
+        let mut a = t.0;
+        let c = a.cols();
+
+        // Out-of-bounds (column)
+        for r in 0..a.rows() {
+            a[(r, c)] = 0;
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_tuple_oob_row_set(t: AMatrix<i32>) -> bool {
+        let mut a = t.0;
+        let r = a.rows();
+
+        // Out-of-bounds (row)
+        for c in 0..a.cols() {
+            a[(r, c)] = 0;
+        }
+
+        true
+    }
+
+    fn qcheck_index_array_get(t: AMatrix<i32>) -> bool {
+        let a = t.0;
+
+        // In-bounds
+        for r in 0..a.rows() {
+            for c in 0..a.cols() {
+                let _ = a[[r, c]];
+            }
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_array_oob_col_get(t: AMatrix<i32>) -> bool {
+        let a = t.0;
+
+        // Out-of-bounds (column)
+        for r in 0..a.rows() {
+            let _ = a[[r, a.cols()]];
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_array_oob_row_get(t: AMatrix<i32>) -> bool {
+        let a = t.0;
+
+        // Out-of-bounds (row)
+        for c in 0..a.cols() {
+            let _ = a[[a.rows(), c]];
+        }
+
+        true
+    }
+
+    fn qcheck_index_array_set(t: AMatrix<i32>, v: i32) -> bool {
+        let mut a = t.0;
+
+        // In-bounds
+        for r in 0..a.rows() {
+            for c in 0..a.cols() {
+                a[[r, c]] = v;
+            }
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_array_oob_col_set(t: AMatrix<i32>) -> bool {
+        let mut a = t.0;
+        let c = a.cols();
+
+        // Out-of-bounds (column)
+        for r in 0..a.rows() {
+            a[[r, c]] = 0;
+        }
+
+        true
+    }
+
+    #[should_panic]
+    fn qcheck_index_array_oob_row_set(t: AMatrix<i32>) -> bool {
+        let mut a = t.0;
+        let r = a.rows();
+
+        // Out-of-bounds (row)
+        for c in 0..a.cols() {
+            a[[r, c]] = 0;
+        }
+
+        true
+    }
+
     fn qcheck_add(t: A3Matrix<i32>) -> bool {
         let a = &t.0;
         let b = &t.1;

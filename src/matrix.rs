@@ -3,7 +3,7 @@ mod from;
 mod iter;
 mod std_ops;
 
-use std::ops::Deref;
+use std::ops::{Deref, Index, IndexMut};
 
 /// A 2-Dimensional, non-resisable container.
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd)]
@@ -259,5 +259,33 @@ impl<T> Deref for Matrix<T> {
 
     fn deref(&self) -> &Self::Target {
         &self.data
+    }
+}
+
+impl<T> Index<[usize; 2]> for Matrix<T> {
+    type Output = T;
+
+    fn index(&self, [row, col]: [usize; 2]) -> &Self::Output {
+        &self.data[col + row * self.cols]
+    }
+}
+
+impl<T> Index<(usize, usize)> for Matrix<T> {
+    type Output = T;
+
+    fn index(&self, (row, col): (usize, usize)) -> &Self::Output {
+        &self.data[col + row * self.cols]
+    }
+}
+
+impl<T> IndexMut<[usize; 2]> for Matrix<T> {
+    fn index_mut(&mut self, [row, col]: [usize; 2]) -> &mut Self::Output {
+        &mut self.data[col + row * self.cols]
+    }
+}
+
+impl<T> IndexMut<(usize, usize)> for Matrix<T> {
+    fn index_mut(&mut self, (row, col): (usize, usize)) -> &mut Self::Output {
+        &mut self.data[col + row * self.cols]
     }
 }
