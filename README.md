@@ -52,7 +52,7 @@ let mat: Matrix<i32> = Matrix::new();
 ### Example: Basic matrix usage
 ```rust
 // Create a matrix of default cells
-let zero: Matrix<u32> = Matrix::new(3, 3);
+let zero: Matrix<u32> = Matrix::new(2, 4);
 
 // Create a 2x4 matrix from an iterator (fill it row by row)
 let mat1: Matrix<u32> = Matrix::from_iter(2, 4, 0..);
