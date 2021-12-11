@@ -7,6 +7,9 @@ use std::ops::{Deref, Index, IndexMut};
 
 use itertools::Itertools;
 
+const STRAIGHTS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
+const DIAGONALS: [(isize, isize); 4] = [(-1, -1), (1, 1), (-1, 1), (1, -1)];
+
 /// A struct used to represent an adjacent location and value in the matrix.
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Neighbor<'a, T> {
@@ -285,9 +288,7 @@ impl<T> Matrix<T> {
     /// Get the neighbors for a particular point in the matrix
     /// This returns an iterator over the index and values of the neighbors.
     pub fn neighbors(&self, row: usize, col: usize) -> impl Iterator<Item = Neighbor<'_, T>> + '_ {
-        const DIRECTIONS: [(isize, isize); 4] = [(-1, 0), (1, 0), (0, -1), (0, 1)];
-
-        DIRECTIONS.iter().filter_map(move |(r_dir, c_dir)| {
+        STRAIGHTS.iter().filter_map(move |(r_dir, c_dir)| {
             let row = row.checked_add_signed(*r_dir)?;
             let col = col.checked_add_signed(*c_dir)?;
             self.get(row, col).map(|value| Neighbor {
@@ -295,6 +296,27 @@ impl<T> Matrix<T> {
                 value,
             })
         })
+    }
+
+    /// Get the neighbors for a particular point in the matrix
+    /// This returns an iterator over the index and values of the neighbors.
+    /// Unlike [`neighbors`](Self::neighbors), this method also includes diagonal neighbors
+    pub fn neighbors_with_diagonals(
+        &self,
+        row: usize,
+        col: usize,
+    ) -> impl Iterator<Item = Neighbor<'_, T>> + '_ {
+        STRAIGHTS
+            .iter()
+            .chain(DIAGONALS.iter())
+            .filter_map(move |(r_dir, c_dir)| {
+                let row = row.checked_add_signed(*r_dir)?;
+                let col = col.checked_add_signed(*c_dir)?;
+                self.get(row, col).map(|value| Neighbor {
+                    loc: (row, col),
+                    value,
+                })
+            })
     }
 }
 
