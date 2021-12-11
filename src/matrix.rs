@@ -10,8 +10,8 @@ use itertools::Itertools;
 /// A struct used to represent an adjacent location and value in the matrix.
 #[derive(Clone, Debug, Hash, PartialEq, Eq)]
 pub struct Neighbor<'a, T> {
-    loc: (usize, usize),
-    value: &'a T,
+    pub loc: (usize, usize),
+    pub value: &'a T,
 }
 
 /// A 2-Dimensional, non-resisable container.
