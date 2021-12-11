@@ -5,6 +5,8 @@ mod std_ops;
 
 use std::ops::{Deref, Index, IndexMut};
 
+use itertools::Itertools;
+
 /// A 2-Dimensional, non-resisable container.
 #[derive(Clone, Debug, Hash, PartialEq, Eq, PartialOrd)]
 pub struct Matrix<T> {
@@ -60,6 +62,24 @@ impl<T> Matrix<T> {
                 data
             },
         }
+    }
+
+    /// Convenience method to construct a Matrix from a row order list of vectors.
+    ///
+    /// # Examples
+    /// ```
+    /// let mat: Matrix<usize> = Matrix::from_vecs(vec![vec![1, 2], vec![3, 4]]);
+    ///
+    /// assert_eq!(mat.get(0, 0).unwrap(), 1);
+    /// assert_eq!(mat.get(0, 1).unwrap(), 2);
+    /// assert_eq!(mat.get(1, 0).unwrap(), 3);
+    /// assert_eq!(mat.get(1, 1).unwrap(), 4);
+    pub fn from_vecs(vecs: Vec<Vec<T>>) -> Self {
+        let rows = vecs.len();
+        assert!(vecs.iter().map(Vec::len).all_equal());
+        let cols = vecs.get(0).map(Vec::len).unwrap_or_default();
+
+        Self::from_iter(rows, cols, vecs.into_iter().flatten())
     }
 
     /// Returns the number of rows in the matrix.

@@ -23,6 +23,9 @@ doctest = false
 [features]
 impl_from = []
 
+[dependencies]
+itertools = "0.10"
+
 [dev-dependencies]
 rand = "0.5"
 criterion = "0.2"
