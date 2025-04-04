@@ -3,121 +3,190 @@
 [![crates.io](https://img.shields.io/crates/v/simple-matrix.svg)](https://crates.io/crates/simple-matrix)
 [![docs.rs](https://docs.rs/simple-matrix/badge.svg)](https://docs.rs/simple-matrix)
 
-## Who, What & Why?
-- *Who?*
-	- I am a French student that is interested in programming (and in Rust for a couple months).
-- *What?*
-	- It is a simple matrix library in Rust without dependencies.
-	- It has no intention to be the *best/fastest/most feature-complete*.
-	- Though, if optimizations keep the API simple, they will be included.
-- *Why?*
-	- To be better in Rust and discover some of its numerous aspects.
-	- To create a simple and reliable matrix library.
+This library provides a simple and efficient way to work with matrices in Rust. It is designed to be easy to use,
+flexible, and efficient, making it suitable for simple applications and educational purposes.
 
 ### Disclaimer
 This crate should not be considered mature enough for *professional use*, check alternatives like [cgmath](https://github.com/brendanzab/cgmath) or [nalgebra](https://github.com/sebcrozet/nalgebra) if you are in that case.
 
 If you are still interested, feel free to continue!
 
-## Usage 
+## Usage
 Link it in your project's `Cargo.toml` file:
 ```toml
 # Example Cargo.toml
 
 [dependencies]
-simple-matrix = "0.1"
+simple-matrix = "0.2"
 ```
 
 Then, you can use it in your project:
-### Rust 2015
 ```rust
-// Specify the extern crate in your lib.rs or main.rs
-extern crate simple_matrix;
-
 // You can now use it
-use simple_matrix::Matrix;
+use simple_matrix::MatrixVec;
 
-let mat: Matrix<i32> = Matrix::new();
-```
-
-### Rust 2018
-```rust
-// No need to specify an extern crate
-// You can use it directly
-use simple_matrix::Matrix;
-
-let mat: Matrix<i32> = Matrix::new();
+let mat: MatrixVec<i32> = MatrixVec::new(2, 3);
 ```
 
 ### Example: Basic matrix usage
 ```rust
-// Create a matrix of default cells
-let zero: Matrix<u32> = Matrix::new(3, 3);
+// Create a 2x3 matrix from a vector of values
+let mat1 = MatrixVec::from_iter(2, 3, vec![1, 2, 3, 4, 5, 6]);
 
-// Create a 2x4 matrix from an iterator (fill it row by row)
-let mat1: Matrix<u32> = Matrix::from_iter(2, 4, 0..);
+// Create another matrix with different values
+let mat2 = MatrixVec::from_iter(2, 3, vec![7, 8, 9, 10, 11, 12]);
 
-// Clone a matrix
-let mat2 = mat1.clone();
+// Matrix addition
+let sum = &mat1 + &mat2;
 
-
-// Add by reference (do not consume them)
-let mut add = &mat1 + &mat2;
-
-// Subtract by value (consume them)
-let mut sub = mat1 - mat2;
-
-// OpAssign are also available
-sub += &zero;
-sub -= zero;
-
-
-// Get cells
-let val: &u32 = add.get(0, 3).unwrap();
-
-// Set cells
-add.set(0, 3, 0);
+// Accessing elements
+println!("mat1[0,0] = {}", mat1[[0, 0]]);
+println!("mat1[0,1] = {}", mat1[(0, 1)]);
+println!("mat1[1,2] = {}", mat1.get(1, 2).unwrap());
 
 // Iterate through the matrix (row by row)
-for val in add {
+for val in &mat1 {
     print!("{} ", val);
+}
+
+// Iterator combinators
+let sum: i32 = mat1.iter().map(|&x| x * 2).sum();
+println!("Sum of doubled elements: {}", sum);
+```
+
+### Example: Dot product and Transposition
+```rust
+// Create a matrix from values
+let mat = MatrixVec::from_iter(2, 3, vec![1, 2, 3, 4, 5, 6]);
+
+// Transpose the matrix
+let transposed = mat.transpose();
+
+// Matrix multiplication (dot product)
+let dot_product = mat.dot(&transposed);
+```
+
+### Matrix Storage Types
+
+Simple-matrix supports two different storage backends:
+
+#### Vector-based Storage
+The default storage type is a dynamic vector, which is flexible and allows matrices of any size:
+
+```rust
+use simple_matrix::MatrixVec;
+
+// Creating a vector-based matrix with 3 rows and 4 columns
+let vec_matrix = MatrixVec::<i32>::new(3, 4);
+
+// Create a matrix from specific values
+let matrix = MatrixVec::from_iter(2, 3, vec![1, 2, 3, 4, 5, 6]);
+```
+
+#### Array-based Storage
+For fixed-size matrices known at compile time, you can use array-based storage:
+
+```rust
+use simple_matrix::MatrixArray;
+
+// Creating an array-based matrix with fixed dimensions
+let arr_matrix = MatrixArray::<i32, 2, 3>::new();
+
+// Set values manually
+arr_matrix[[0, 0]] = 1;
+arr_matrix[[0, 1]] = 2;
+arr_matrix[[0, 2]] = 3;
+arr_matrix[[1, 0]] = 4;
+arr_matrix[[1, 1]] = 5;
+arr_matrix[[1, 2]] = 6;
+```
+
+### Advanced Examples
+
+#### Creating and Using an Identity Matrix
+```rust
+// Create an identity matrix using vector storage
+fn create_identity_matrix(size: usize) -> MatrixVec<i32> {
+    let mut identity = MatrixVec::<i32>::identity(size, 1);
+    identity
+}
+
+// For array-based identity matrices
+fn create_identity_matrix<const N: usize>() -> MatrixArray<i32, N, N> {
+    MatrixArray::<i32, N, N>::identity(1)
+}
+
+// Using the identity matrix
+let matrix = MatrixVec::from_iter(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
+let identity = create_identity_matrix(3);
+let result = matrix.dot(&identity); // Should be equal to original matrix
+```
+
+#### Working with Matrix Statistics
+```rust
+// Sum of all elements using iteration
+let sum: i32 = matrix.iter().map(|&x| x).sum();
+
+// Diagonal elements
+for i in 0..matrix.rows().min(matrix.cols()) {
+    let diagonal_element = matrix[[i, i]];
+    // Do something with diagonal_element
+}
+
+// Trace (sum of diagonal elements)
+let trace: i32 = (0..matrix.rows().min(matrix.cols()))
+    .map(|i| matrix[[i, i]])
+    .sum();
+```
+
+### Supported Operations
+
+The library supports a full set of element-wise operations for working with matrices:
+
+#### Matrix-Matrix Operations
+- Addition: `matrix1 + matrix2`
+- Subtraction: `matrix1 - matrix2`
+- Element-wise multiplication: `matrix1 * matrix2`
+- Element-wise division: `matrix1 / matrix2`
+- Element-wise remainder: `matrix1 % matrix2`
+- Bitwise operations: `&`, `|`, `^`, `<<`, `>>`
+
+#### Matrix-Scalar Operations
+For operations with scalars, use the iter and iter_mut methods:
+```rust
+// Multiply each element by 2
+let doubled =  matrix.clone().iter_mut().for_each(|val| *val *= 2);
+
+// Bitshift each element left by 3
+for val in matrix.iter_mut() {
+    *val <<= 3;
 }
 ```
 
-### Example: Dot product
-```rust
-let mat: Matrix<f64> = Matrix::from_iter(2, 4, 0..);
+#### Assignment Operations
+- Matrix-Matrix: `+=`, `-=`, `*=`, `/=`, `%=`, `&=`, `|=`, `^=`, `<<=`, `>>=`
 
-// Construct the transposed matrix
-let mat_t = mat.transpose();
+#### Matrix Functions
+- `transpose()` - Creates a new matrix with rows and columns swapped
+- `dot()` - Matrix multiplication (dot product)
+- `iter()` - Returns an iterator over references to all elements in the matrix
+- `iter_mut()` - Returns an iterator over mutable references to all elements in the matrix
 
-// Construct the dot product
-let dot = mat * mat_t;
-```
+#### Element Access
+- `get(row, col)` - Get a reference to an element
+- `get_mut(row, col)` - Get a mutable reference to an element
+- `set(row, col, value)` - Set an element to a new value
+- `matrix[(row, col)]` - Index-based access (tuple)
+- `matrix[[row, col]]` - Index-based access (array)
+- `get_row(row)`, `get_col(col)` - Get entire rows and columns
 
-### Features
-- *Features are extensions of the library left to opt-in by the user.*
-- *They can increase compilation time and library size.*
-
-To include a feature, add it to your `Cargo.toml` file:
-```toml
-# Example Cargo.toml with added feature (replace values with your own)
-
-[dependencies]
-simple-matrix = { version = "0.1", features = ["impl_from"] }
-```
-
-Current available features are listed below with a little description:
-#### impl_from
-Implements the *From* Trait for basic numeric types.
-
-```rust
-let m1: Matrix<i8> = Matrix::new(3, 5);
-let m2: Matrix<i64> = m1.into();
-```
+#### Iteration
+- `for element in matrix` - Iterate through all elements row by row
+- `for element in &matrix` - Iterate through references to elements
+- `for element in &mut matrix` - Iterate through mutable references
 
 ### Tests
-- Run `cargo test` in the root of the project
+- Run `cargo nextest run` in the root of the project
 - Documentation tests are disabled for now (rustdoc does not seem to work with edition 2018)
 
 ### Benchmarks

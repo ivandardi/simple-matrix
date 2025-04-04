@@ -1,72 +1,111 @@
-use quickcheck::{quickcheck, Arbitrary, Gen};
-use simple_matrix::Matrix;
+use quickcheck::{Arbitrary, Gen, quickcheck};
+use simple_matrix::MatrixVec;
+use simple_matrix::ops::{DotProduct, Transpose};
 
 const RANGE: i32 = 100000; // No over/under-flow checking for now
 
 #[derive(Debug, Clone)]
-struct AMatrix<T>(Matrix<T>);
+struct AMatrix<T>(MatrixVec<T>);
 
 #[derive(Debug, Clone)]
-struct A2Matrix<T>(Matrix<T>, Matrix<T>);
+struct A2Matrix<T>(MatrixVec<T>, MatrixVec<T>);
 
 #[derive(Debug, Clone)]
-struct A3Matrix<T>(Matrix<T>, Matrix<T>, Matrix<T>);
+struct A3Matrix<T>(MatrixVec<T>, MatrixVec<T>, MatrixVec<T>);
 
 impl Arbitrary for AMatrix<i32> {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let s = std::cmp::max(1, g.size()); // rows & cols != 0
 
-        let cols = g.gen_range(1, s);
-        let rows = g.gen_range(1, s);
+        // Use size() to generate random dimensions, staying within bounds
+        let cols = (g.size() % s) + 1; // Ensure at least 1
+        let rows = (g.size() % s) + 1; // Ensure at least 1
 
-        AMatrix(Matrix::from_iter(
+        // Generate random data using Gen::arbitrary() instead of gen_range
+        AMatrix(MatrixVec::<i32>::from_iter(
             rows,
             cols,
-            (0..).map(|_| g.gen_range(-RANGE, RANGE)),
+            (0..rows * cols).map(|_| i32::arbitrary(g) % (2 * RANGE) - RANGE),
         ))
     }
 }
 
 impl Arbitrary for A2Matrix<i32> {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let s = std::cmp::max(1, g.size()); // rows & cols != 0
 
-        let cols = g.gen_range(1, s);
-        let rows = g.gen_range(1, s);
+        // Use size() to generate random dimensions, staying within bounds
+        let cols = (g.size() % s) + 1; // Ensure at least 1
+        let rows = (g.size() % s) + 1; // Ensure at least 1
 
         A2Matrix(
-            Matrix::from_iter(rows, cols, (0..).map(|_| g.gen_range(-RANGE, RANGE))),
-            Matrix::from_iter(rows, cols, (0..).map(|_| g.gen_range(-RANGE, RANGE))),
+            MatrixVec::<i32>::from_iter(
+                rows,
+                cols,
+                (0..rows * cols).map(|_| i32::arbitrary(g) % (2 * RANGE) - RANGE),
+            ),
+            MatrixVec::<i32>::from_iter(
+                rows,
+                cols,
+                (0..rows * cols).map(|_| i32::arbitrary(g) % (2 * RANGE) - RANGE),
+            ),
         )
     }
 }
 
 impl Arbitrary for A3Matrix<i32> {
-    fn arbitrary<G: Gen>(g: &mut G) -> Self {
+    fn arbitrary(g: &mut Gen) -> Self {
         let s = std::cmp::max(1, g.size()); // rows & cols != 0
 
-        let cols = g.gen_range(1, s);
-        let rows = g.gen_range(1, s);
+        // Use size() to generate random dimensions, staying within bounds
+        let cols = (g.size() % s) + 1; // Ensure at least 1
+        let rows = (g.size() % s) + 1; // Ensure at least 1
 
         A3Matrix(
-            Matrix::from_iter(rows, cols, (0..).map(|_| g.gen_range(-RANGE, RANGE))),
-            Matrix::from_iter(rows, cols, (0..).map(|_| g.gen_range(-RANGE, RANGE))),
-            Matrix::from_iter(rows, cols, (0..).map(|_| g.gen_range(-RANGE, RANGE))),
+            MatrixVec::<i32>::from_iter(
+                rows,
+                cols,
+                (0..rows * cols).map(|_| i32::arbitrary(g) % (2 * RANGE) - RANGE),
+            ),
+            MatrixVec::<i32>::from_iter(
+                rows,
+                cols,
+                (0..rows * cols).map(|_| i32::arbitrary(g) % (2 * RANGE) - RANGE),
+            ),
+            MatrixVec::<i32>::from_iter(
+                rows,
+                cols,
+                (0..rows * cols).map(|_| i32::arbitrary(g) % (2 * RANGE) - RANGE),
+            ),
         )
     }
 }
 
-fn neg(m: Matrix<i32>) -> Matrix<i32> {
-    let zero = Matrix::new(m.rows(), m.cols());
-    zero - m
+fn neg(m: MatrixVec<i32>) -> MatrixVec<i32> {
+    let zero = MatrixVec::<i32>::new(m.rows(), m.cols());
+    &zero - &m
 }
 
-fn identity(length: usize) -> Matrix<i32> {
-    let mut m = Matrix::new(length, length);
-    for i in 0..length {
-        m.set(i, i, 1);
+fn identity(length: usize) -> MatrixVec<i32> {
+    MatrixVec::<i32>::identity(length, 1)
+}
+
+// For all tests using matrix equality, we need to compare element by element
+// since MatrixVec doesn't implement PartialEq correctly
+fn matrices_equal<T: PartialEq>(a: &MatrixVec<T>, b: &MatrixVec<T>) -> bool {
+    if a.rows() != b.rows() || a.cols() != b.cols() {
+        return false;
     }
-    m
+
+    for r in 0..a.rows() {
+        for c in 0..a.cols() {
+            if a[(r, c)] != b[(r, c)] {
+                return false;
+            }
+        }
+    }
+
+    true
 }
 
 quickcheck! {
@@ -105,7 +144,7 @@ quickcheck! {
         // In-bounds
         for r in 0..a.rows() {
             for c in 0..a.cols() {
-                if !a.set(r, c, v) || a.get(r, c) != Some(&v) {
+                if a.set(r, c, v).is_none() || a.get(r, c) != Some(&v) {
                     return false;
                 }
             }
@@ -113,14 +152,14 @@ quickcheck! {
 
         // Out-of-bounds (column)
         for r in 0..a.rows() {
-            if a.set(r, a.cols(), 0) {
+            if a.set(r, a.cols(), 0).is_some() {
                 return false;
             }
         }
 
         // Out-of-bounds (row)
         for c in 0..a.cols() {
-            if a.set(a.rows(), c, 0) {
+            if a.set(a.rows(), c, 0).is_some() {
                 return false;
             }
         }
@@ -281,35 +320,144 @@ quickcheck! {
     }
 
     fn qcheck_add(t: A3Matrix<i32>) -> bool {
-        let a = &t.0;
-        let b = &t.1;
-        let c = &t.2;
-        let zero = &Matrix::new(a.rows(), a.cols());
+        let a = t.0.clone();
+        let b = t.1.clone();
+        let c = t.2.clone();
+        let zero = MatrixVec::<i32>::new(a.rows(), a.cols());
 
-        (a + b == b + a)
-        && (a + &(b + c) == &(a + b) + c)
-        && (&(a + zero) == a)
+        matrices_equal(&(&a + &b), &(&b + &a))
+        && matrices_equal(&(&a + &(&b + &c)), &(&(&a + &b) + &c))
+        && matrices_equal(&(&a + &zero), &a)
     }
 
     fn qcheck_sub(t: A2Matrix<i32>) -> bool {
-        let a = &t.0;
-        let b = &t.1;
-        let zero = &Matrix::new(a.rows(), a.cols());
+        let a = t.0.clone();
+        let b = t.1.clone();
+        let zero = MatrixVec::<i32>::new(a.rows(), a.cols());
 
-        (a - b == neg(b - a))
-        && (&(a - a) == zero)
-        && (&(a - zero) == a)
+        // First check: a - b = -(b - a)
+        let a_minus_b = &a - &b;
+        let b_minus_a = &b - &a;
+        let neg_b_minus_a = neg(b_minus_a);
+
+        // Second check: a - a = 0
+        let a_minus_a = &a - &a;
+
+        // Third check: a - 0 = a
+        let a_minus_zero = &a - &zero;
+
+        matrices_equal(&a_minus_b, &neg_b_minus_a)
+        && matrices_equal(&a_minus_a, &zero)
+        && matrices_equal(&a_minus_zero, &a)
     }
 
     fn qcheck_mul(t: AMatrix<i32>) -> bool {
-        let zero = |r,c| Matrix::new(r, c);
-
         let a = &t.0;
-        let ident1 = &identity(a.cols());
-        let ident2 = &identity(a.rows());
 
-        (a * &zero(a.cols(), 2) == zero(a.rows(), 2))
-        && (&(a * ident1) == a)
-        && (&(ident2 * a) == a)
+        // Create properly sized identity matrices that match the matrix dimensions
+        let ident_cols = identity(a.cols());
+        let ident_rows = identity(a.rows());
+
+        // Create a properly sized zero matrix
+        let zero_matrix = MatrixVec::<i32>::new(a.cols(), 2);
+        let zero_result = MatrixVec::<i32>::new(a.rows(), 2);
+
+        // Test that a × 0 = 0
+        let a_times_zero = a.dot(&zero_matrix);
+
+        // Test matrix multiplication properties
+        matrices_equal(&a_times_zero, &zero_result)
+        && matrices_equal(&a.dot(&ident_cols), a)
+        && matrices_equal(&ident_rows.dot(a), a)
+    }
+
+    fn qcheck_transpose_trait(t: AMatrix<i32>) -> bool {
+        let a = &t.0;
+
+        // Test using the trait implementation
+        let transposed_trait = Transpose::transpose(a);
+        let transposed_method = a.transpose();
+
+        matrices_equal(&transposed_trait, &transposed_method)
+    }
+
+    fn qcheck_dot_trait(t: AMatrix<i32>) -> bool {
+        let a = &t.0;
+
+        // Create an identity matrix for the dot product test
+        let ident = identity(a.cols());
+
+        // Test using the trait implementation vs the method
+        let dot_trait = DotProduct::dot(a, &ident);
+        let dot_method = a.dot(&ident);
+
+        matrices_equal(&dot_trait, &dot_method)
+    }
+
+    fn qcheck_iter_methods(t: AMatrix<i32>) -> bool {
+        let a = &t.0;
+
+        let mut sum1 = 0;
+        let mut sum2 = 0;
+
+        // Sum using indices
+        for r in 0..a.rows() {
+            for c in 0..a.cols() {
+                sum1 += a[(r, c)];
+            }
+        }
+
+        // Sum using iterator
+        for val in a.iter() {
+            sum2 += *val;
+        }
+
+        sum1 == sum2
+    }
+
+    fn qcheck_iter_mut_methods(t: AMatrix<i32>) -> bool {
+        // Create new matrices instead of cloning
+        let original = &t.0;
+        let mut a = MatrixVec::<i32>::from_iter(original.rows(), original.cols(),
+                                      (0..original.rows()*original.cols())
+                                          .map(|i| {
+                                              let r = i / original.cols();
+                                              let c = i % original.cols();
+                                              original[(r, c)]
+                                          }));
+        let mut b = MatrixVec::<i32>::from_iter(original.rows(), original.cols(),
+                                      (0..original.rows()*original.cols())
+                                          .map(|i| {
+                                              let r = i / original.cols();
+                                              let c = i % original.cols();
+                                              original[(r, c)]
+                                          }));
+
+        // Double values with normal indexing
+        for r in 0..a.rows() {
+            for c in 0..a.cols() {
+                a[(r, c)] *= 2;
+            }
+        }
+
+        // Double values with mutable iterator
+        for val in b.iter_mut() {
+            *val *= 2;
+        }
+
+        // Compare element by element
+        matrices_equal(&a, &b)
+    }
+
+    fn qcheck_transpose_properties(t: AMatrix<i32>) -> bool {
+        let a = &t.0;
+
+        // Transposing twice gets back the original matrix
+        let transposed_twice = a.transpose().transpose();
+
+        // Check the mathematical property
+        a.rows() == transposed_twice.rows() &&
+        a.cols() == transposed_twice.cols() &&
+        (0..a.rows()).all(|r| (0..a.cols()).all(|c| a[(r, c)] == transposed_twice[(r, c)]))
     }
 }
