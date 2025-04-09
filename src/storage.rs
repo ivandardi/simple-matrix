@@ -25,21 +25,21 @@ pub trait Storage<T> {
 
     /// Get a reference to the element at the given row and column.
     /// Returns None if the indices are out of bounds.
-    fn get(&self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&T>;
+    fn get(&self, row: usize, col: usize) -> Option<&T>;
 
     /// Get a mutable reference to the element at the given row and column.
     /// Returns None if the indices are out of bounds.
-    fn get_mut(&mut self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&mut T>;
+    fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut T>;
 
     /// Set the element at the given row and column to the given value.
     /// Returns the old value, or None if the indices are out of bounds.
-    fn set(&mut self, row: impl Into<usize>, col: impl Into<usize>, value: T) -> Option<T>;
+    fn set(&mut self, row: usize, col: usize, value: T) -> Option<T>;
 
     /// Get the row at the given index.
     /// Returns None if the index is out of bounds.
-    fn get_row(&self, row: impl Into<usize>) -> Option<Vec<&T>>;
+    fn get_row(&self, row: usize) -> Option<Vec<&T>>;
 
     /// Get the column at the given index.
     /// Returns None if the index is out of bounds.
-    fn get_col(&self, col: impl Into<usize>) -> Option<Vec<&T>>;
+    fn get_col(&self, col: usize) -> Option<Vec<&T>>;
 }

@@ -111,7 +111,7 @@ where
     /// This method creates a square matrix with size × size dimensions.
     ///
     /// # Parameters
-    /// * `size` - The number of rows and columns in the matrix, can be any type that can be converted to usize
+    /// * `size` - The number of rows and columns in the matrix
     /// * `elem` - The value to place on the diagonal (typically 1 for a standard identity matrix)
     ///
     /// # Examples
@@ -119,7 +119,7 @@ where
     /// use simple_matrix::MatrixVec;
     ///
     /// // Create a 3x3 identity matrix with 1s on the diagonal
-    /// let identity_matrix = MatrixVec::<i32>::identity(3_usize, 1);
+    /// let identity_matrix = MatrixVec::<i32>::identity(3, 1);
     ///
     /// // Diagonal elements should be 1, others should be 0
     /// assert_eq!(identity_matrix[[0, 0]], 1);
@@ -131,12 +131,10 @@ where
     ///
     /// # Panics
     /// Panics if `size` is zero.
-    pub fn identity(size: impl Into<usize>, elem: T) -> Self
+    pub fn identity(size: usize, elem: T) -> Self
     where
         T: Default + Copy + PartialEq,
     {
-        let size = size.into();
-
         let mut data = StorageVec::new(size, size);
 
         for i in 0..size {
@@ -315,8 +313,8 @@ where
     /// Gets a reference to the value at given row and column.
     ///
     /// # Parameters
-    /// * `row` - The row index (0-based), can be any type that can be converted to usize
-    /// * `col` - The column index (0-based), can be any type that can be converted to usize
+    /// * `row` - The row index (0-based)
+    /// * `col` - The column index (0-based)
     ///
     /// # Returns
     /// * `Some(&T)` - A reference to the value if the indices are valid
@@ -327,19 +325,19 @@ where
     /// use simple_matrix::MatrixVec;
     ///
     /// let mat = MatrixVec::from_iter(3, 6, 0..18);
-    /// assert_eq!(mat.get(0_usize, 0_usize), Some(&0));
-    /// assert_eq!(mat.get(2_usize, 5_usize), Some(&17));
-    /// assert_eq!(mat.get(3_usize, 0_usize), None);  // Out of bounds
+    /// assert_eq!(mat.get(0, 0), Some(&0));
+    /// assert_eq!(mat.get(2, 5), Some(&17));
+    /// assert_eq!(mat.get(3, 0), None);  // Out of bounds
     /// ```
-    pub fn get(&self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&T> {
+    pub fn get(&self, row: usize, col: usize) -> Option<&T> {
         self.data.get(row, col)
     }
 
     /// Gets a mutable reference to the value at the given row and column.
     ///
     /// # Parameters
-    /// * `row` - The row index (0-based), can be any type that can be converted to usize
-    /// * `col` - The column index (0-based), can be any type that can be converted to usize
+    /// * `row` - The row index (0-based)
+    /// * `col` - The column index (0-based)
     ///
     /// # Returns
     /// * `Some(&mut T)` - A mutable reference to the value if the indices are valid
@@ -350,21 +348,21 @@ where
     /// use simple_matrix::MatrixVec;
     ///
     /// let mut mat = MatrixVec::from_iter(3, 6, 0..18);
-    /// if let Some(val) = mat.get_mut(0_usize, 0_usize) {
+    /// if let Some(val) = mat.get_mut(0, 0) {
     ///     *val = 100;
     /// }
-    /// assert_eq!(mat.get(0_usize, 0_usize), Some(&100));
-    /// assert_eq!(mat.get_mut(3_usize, 0_usize), None);  // Out of bounds
+    /// assert_eq!(mat.get(0, 0), Some(&100));
+    /// assert_eq!(mat.get_mut(3, 0), None);  // Out of bounds
     /// ```
-    pub fn get_mut(&mut self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&mut T> {
+    pub fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut T> {
         self.data.get_mut(row, col)
     }
 
     /// Sets the cell at the given row and column to the specified value.
     ///
     /// # Parameters
-    /// * `row` - The row index (0-based), can be any type that can be converted to usize
-    /// * `col` - The column index (0-based), can be any type that can be converted to usize
+    /// * `row` - The row index (0-based)
+    /// * `col` - The column index (0-based)
     /// * `value` - The new value to set
     ///
     /// # Returns
@@ -376,18 +374,18 @@ where
     /// use simple_matrix::MatrixVec;
     ///
     /// let mut mat = MatrixVec::from_iter(3, 6, 0..18);
-    /// assert_eq!(mat.set(1_usize, 2_usize, 42), Some(8));
-    /// assert_eq!(mat.get(1_usize, 2_usize), Some(&42));
-    /// assert_eq!(mat.set(3_usize, 0_usize, 0), None);  // Out of bounds
+    /// assert_eq!(mat.set(1, 2, 42), Some(8));
+    /// assert_eq!(mat.get(1, 2), Some(&42));
+    /// assert_eq!(mat.set(3, 0, 0), None);  // Out of bounds
     /// ```
-    pub fn set(&mut self, row: impl Into<usize>, col: impl Into<usize>, value: T) -> Option<T> {
+    pub fn set(&mut self, row: usize, col: usize, value: T) -> Option<T> {
         self.data.set(row, col, value)
     }
 
     /// Gets an iterator over all elements in the requested row.
     ///
     /// # Parameters
-    /// * `row` - The row index (0-based), can be any type that can be converted to usize
+    /// * `row` - The row index (0-based)
     ///
     /// # Returns
     /// * `Some(Iterator)` - An iterator yielding references to the elements if the row is valid
@@ -398,20 +396,20 @@ where
     /// use simple_matrix::MatrixVec;
     ///
     /// let mat = MatrixVec::from_iter(3, 6, 0..18);
-    /// if let Some(row_iter) = mat.get_row(1_usize) {
+    /// if let Some(row_iter) = mat.get_row(1) {
     ///     let row_vec: Vec<&i32> = row_iter.into_iter().collect();
     ///     assert_eq!(row_vec, vec![&6, &7, &8, &9, &10, &11]);
     /// }
-    /// assert!(mat.get_row(10_usize).is_none());  // Out of bounds
+    /// assert!(mat.get_row(10).is_none());  // Out of bounds
     /// ```
-    pub fn get_row(&self, row: impl Into<usize>) -> Option<impl IntoIterator<Item = &T>> {
+    pub fn get_row(&self, row: usize) -> Option<impl IntoIterator<Item = &T>> {
         self.data.get_row(row)
     }
 
     /// Gets an iterator over all elements in the requested column.
     ///
     /// # Parameters
-    /// * `col` - The column index (0-based), can be any type that can be converted to usize
+    /// * `col` - The column index (0-based)
     ///
     /// # Returns
     /// * `Some(Iterator)` - An iterator yielding references to the elements if the column is valid
@@ -422,13 +420,13 @@ where
     /// use simple_matrix::MatrixVec;
     ///
     /// let mat = MatrixVec::from_iter(3, 6, 0..18);
-    /// if let Some(col_iter) = mat.get_col(1_usize) {
+    /// if let Some(col_iter) = mat.get_col(1) {
     ///     let col_vec: Vec<&i32> = col_iter.into_iter().collect();
     ///     assert_eq!(col_vec, vec![&1, &7, &13]);
     /// }
-    /// assert!(mat.get_col(10_usize).is_none());  // Out of bounds
+    /// assert!(mat.get_col(10).is_none());  // Out of bounds
     /// ```
-    pub fn get_col(&self, col: impl Into<usize>) -> Option<impl IntoIterator<Item = &T>> {
+    pub fn get_col(&self, col: usize) -> Option<impl IntoIterator<Item = &T>> {
         self.data.get_col(col)
     }
 }

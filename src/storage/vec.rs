@@ -63,10 +63,7 @@ impl<T> Storage<T> for StorageVec<T> {
         self.cols.get()
     }
 
-    fn get(&self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&T> {
-        let row = row.into();
-        let col = col.into();
-
+    fn get(&self, row: usize, col: usize) -> Option<&T> {
         if row >= self.rows.get() || col >= self.cols.get() {
             return None;
         }
@@ -75,10 +72,7 @@ impl<T> Storage<T> for StorageVec<T> {
         self.data.get(idx)
     }
 
-    fn get_mut(&mut self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&mut T> {
-        let row = row.into();
-        let col = col.into();
-
+    fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut T> {
         if row >= self.rows.get() || col >= self.cols.get() {
             return None;
         }
@@ -87,10 +81,7 @@ impl<T> Storage<T> for StorageVec<T> {
         self.data.get_mut(idx)
     }
 
-    fn set(&mut self, row: impl Into<usize>, col: impl Into<usize>, value: T) -> Option<T> {
-        let row = row.into();
-        let col = col.into();
-
+    fn set(&mut self, row: usize, col: usize, value: T) -> Option<T> {
         if row >= self.rows.get() || col >= self.cols.get() {
             return None;
         }
@@ -99,8 +90,7 @@ impl<T> Storage<T> for StorageVec<T> {
         Some(std::mem::replace(&mut self.data[index], value))
     }
 
-    fn get_row(&self, row: impl Into<usize>) -> Option<Vec<&T>> {
-        let row = row.into();
+    fn get_row(&self, row: usize) -> Option<Vec<&T>> {
         if row >= self.rows.get() {
             return None;
         }
@@ -114,8 +104,7 @@ impl<T> Storage<T> for StorageVec<T> {
         )
     }
 
-    fn get_col(&self, col: impl Into<usize>) -> Option<Vec<&T>> {
-        let col = col.into();
+    fn get_col(&self, col: usize) -> Option<Vec<&T>> {
         if col >= self.cols.get() {
             return None;
         }

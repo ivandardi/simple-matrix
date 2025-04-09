@@ -76,10 +76,7 @@ impl<T, const R: usize, const C: usize> Storage<T> for StorageArray<T, R, C> {
         C
     }
 
-    fn get(&self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&T> {
-        let row = row.into();
-        let col = col.into();
-
+    fn get(&self, row: usize, col: usize) -> Option<&T> {
         if row >= R || col >= C {
             return None;
         }
@@ -87,10 +84,7 @@ impl<T, const R: usize, const C: usize> Storage<T> for StorageArray<T, R, C> {
         Some(&self.data[row][col])
     }
 
-    fn get_mut(&mut self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&mut T> {
-        let row = row.into();
-        let col = col.into();
-
+    fn get_mut(&mut self, row: usize, col: usize) -> Option<&mut T> {
         if row >= R || col >= C {
             return None;
         }
@@ -98,10 +92,7 @@ impl<T, const R: usize, const C: usize> Storage<T> for StorageArray<T, R, C> {
         Some(&mut self.data[row][col])
     }
 
-    fn set(&mut self, row: impl Into<usize>, col: impl Into<usize>, value: T) -> Option<T> {
-        let row = row.into();
-        let col = col.into();
-
+    fn set(&mut self, row: usize, col: usize, value: T) -> Option<T> {
         if row >= R || col >= C {
             return None;
         }
@@ -109,16 +100,14 @@ impl<T, const R: usize, const C: usize> Storage<T> for StorageArray<T, R, C> {
         Some(std::mem::replace(&mut self.data[row][col], value))
     }
 
-    fn get_row(&self, row: impl Into<usize>) -> Option<Vec<&T>> {
-        let row = row.into();
+    fn get_row(&self, row: usize) -> Option<Vec<&T>> {
         if row >= R {
             return None;
         }
         Some(self.data[row].iter().collect())
     }
 
-    fn get_col(&self, col: impl Into<usize>) -> Option<Vec<&T>> {
-        let col = col.into();
+    fn get_col(&self, col: usize) -> Option<Vec<&T>> {
         if col >= C {
             return None;
         }
