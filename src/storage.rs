@@ -1,11 +1,11 @@
-///! Storage module for matrix operations
-///! This module defines the `Storage` trait and its implementations for different storage types.
-///! It includes the `StorageArray` and `StorageVec` types, which represent matrix storage in a fixed-size array and a dynamic vector, respectively.
+//! Module containing storage implementations for matrices
+//! This module defines the `Storage` trait and its implementations for different storage types.
+//! It includes the `StorageArray` and `StorageVec` types, which represent matrix storage in a fixed-size array and a dynamic vector, respectively.
 
 /// Module for fixed-size array storage
-pub mod array;
+mod array;
 /// Module for dynamic vector storage
-pub mod vec;
+mod vec;
 
 pub use array::StorageArray;
 pub use vec::StorageVec;

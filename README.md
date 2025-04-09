@@ -30,6 +30,8 @@ let mat: MatrixVec<i32> = MatrixVec::new(2, 3);
 
 ### Example: Basic matrix usage
 ```rust
+use simple_matrix::MatrixVec;
+
 // Create a 2x3 matrix from a vector of values
 let mat1 = MatrixVec::from_iter(2, 3, vec![1, 2, 3, 4, 5, 6]);
 
@@ -56,6 +58,9 @@ println!("Sum of doubled elements: {}", sum);
 
 ### Example: Dot product and Transposition
 ```rust
+use simple_matrix::MatrixVec;
+use simple_matrix::ops::{Transpose, DotProduct};
+
 // Create a matrix from values
 let mat = MatrixVec::from_iter(2, 3, vec![1, 2, 3, 4, 5, 6]);
 
@@ -90,7 +95,7 @@ For fixed-size matrices known at compile time, you can use array-based storage:
 use simple_matrix::MatrixArray;
 
 // Creating an array-based matrix with fixed dimensions
-let arr_matrix = MatrixArray::<i32, 2, 3>::new();
+let mut arr_matrix = MatrixArray::<i32, 2, 3>::new();
 
 // Set values manually
 arr_matrix[[0, 0]] = 1;
@@ -105,25 +110,33 @@ arr_matrix[[1, 2]] = 6;
 
 #### Creating and Using an Identity Matrix
 ```rust
+use simple_matrix::{MatrixVec, MatrixArray};
+use simple_matrix::ops::DotProduct;
+
 // Create an identity matrix using vector storage
-fn create_identity_matrix(size: usize) -> MatrixVec<i32> {
+fn create_identity_vec(size: usize) -> MatrixVec<i32> {
     let mut identity = MatrixVec::<i32>::identity(size, 1);
     identity
 }
 
 // For array-based identity matrices
-fn create_identity_matrix<const N: usize>() -> MatrixArray<i32, N, N> {
+fn create_identity_array<const N: usize>() -> MatrixArray<i32, N, N> {
     MatrixArray::<i32, N, N>::identity(1)
 }
 
 // Using the identity matrix
 let matrix = MatrixVec::from_iter(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
-let identity = create_identity_matrix(3);
+let identity = create_identity_vec(3);
 let result = matrix.dot(&identity); // Should be equal to original matrix
 ```
 
 #### Working with Matrix Statistics
 ```rust
+use simple_matrix::MatrixVec;
+
+// Create a sample matrix
+let matrix = MatrixVec::from_iter(3, 3, vec![1, 2, 3, 4, 5, 6, 7, 8, 9]);
+
 // Sum of all elements using iteration
 let sum: i32 = matrix.iter().map(|&x| x).sum();
 
@@ -154,8 +167,13 @@ The library supports a full set of element-wise operations for working with matr
 #### Matrix-Scalar Operations
 For operations with scalars, use the iter and iter_mut methods:
 ```rust
+use simple_matrix::MatrixVec;
+
+// Create a sample matrix
+let mut matrix = MatrixVec::from_iter(2, 2, vec![1, 2, 3, 4]);
+
 // Multiply each element by 2
-let doubled =  matrix.clone().iter_mut().for_each(|val| *val *= 2);
+let doubled = matrix.clone().iter_mut().for_each(|val| *val *= 2);
 
 // Bitshift each element left by 3
 for val in matrix.iter_mut() {
@@ -187,7 +205,7 @@ for val in matrix.iter_mut() {
 
 ### Tests
 - Run `cargo nextest run` in the root of the project
-- Documentation tests are disabled for now (rustdoc does not seem to work with edition 2018)
+- Run `cargo test --doc` to test the documentation examples
 
 ### Benchmarks
 - Run `cargo bench` in the root of the project

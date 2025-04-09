@@ -1,4 +1,4 @@
-//! The `ops` module contains traits and implementations for matrix operations.
+//! Module containing traits and implementations for matrix operations.
 //! It includes traits for transposition, dot product, and common matrix operations.
 
 mod dot;
