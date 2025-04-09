@@ -405,39 +405,3 @@ impl_op_assign_array!(BitOrAssign, bitor_assign, |=);
 impl_op_assign_array!(BitXorAssign, bitxor_assign, ^=);
 impl_op_assign_array!(ShlAssign, shl_assign, <<=);
 impl_op_assign_array!(ShrAssign, shr_assign, >>=);
-
-// Matrix equality implementation - specific for StorageVec
-impl<T: PartialEq + Clone> PartialEq for MatrixVec<T> {
-    fn eq(&self, other: &Self) -> bool {
-        if self.rows() != other.rows() || self.cols() != other.cols() {
-            return false;
-        }
-
-        for r in 0..self.rows() {
-            for c in 0..self.cols() {
-                if self[(r, c)] != other[(r, c)] {
-                    return false;
-                }
-            }
-        }
-
-        true
-    }
-}
-
-// Matrix equality implementation - specific for StorageArray
-impl<T: PartialEq + Clone, const R: usize, const C: usize> PartialEq<MatrixArray<T, R, C>>
-    for MatrixArray<T, R, C>
-{
-    fn eq(&self, other: &MatrixArray<T, R, C>) -> bool {
-        for r in 0..R {
-            for c in 0..C {
-                if self[(r, c)] != other[(r, c)] {
-                    return false;
-                }
-            }
-        }
-
-        true
-    }
-}

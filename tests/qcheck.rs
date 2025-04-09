@@ -17,11 +17,9 @@ impl Arbitrary for AMatrix<i32> {
     fn arbitrary(g: &mut Gen) -> Self {
         let s = std::cmp::max(1, g.size()); // rows & cols != 0
 
-        // Use size() to generate random dimensions, staying within bounds
         let cols = (g.size() % s) + 1; // Ensure at least 1
         let rows = (g.size() % s) + 1; // Ensure at least 1
 
-        // Generate random data using Gen::arbitrary() instead of gen_range
         AMatrix(MatrixVec::<i32>::from_iter(
             rows,
             cols,
@@ -34,7 +32,6 @@ impl Arbitrary for A2Matrix<i32> {
     fn arbitrary(g: &mut Gen) -> Self {
         let s = std::cmp::max(1, g.size()); // rows & cols != 0
 
-        // Use size() to generate random dimensions, staying within bounds
         let cols = (g.size() % s) + 1; // Ensure at least 1
         let rows = (g.size() % s) + 1; // Ensure at least 1
 
@@ -57,7 +54,6 @@ impl Arbitrary for A3Matrix<i32> {
     fn arbitrary(g: &mut Gen) -> Self {
         let s = std::cmp::max(1, g.size()); // rows & cols != 0
 
-        // Use size() to generate random dimensions, staying within bounds
         let cols = (g.size() % s) + 1; // Ensure at least 1
         let rows = (g.size() % s) + 1; // Ensure at least 1
 
@@ -88,24 +84,6 @@ fn neg(m: MatrixVec<i32>) -> MatrixVec<i32> {
 
 fn identity(length: usize) -> MatrixVec<i32> {
     MatrixVec::<i32>::identity(length, 1)
-}
-
-// For all tests using matrix equality, we need to compare element by element
-// since MatrixVec doesn't implement PartialEq correctly
-fn matrices_equal<T: PartialEq>(a: &MatrixVec<T>, b: &MatrixVec<T>) -> bool {
-    if a.rows() != b.rows() || a.cols() != b.cols() {
-        return false;
-    }
-
-    for r in 0..a.rows() {
-        for c in 0..a.cols() {
-            if a[(r, c)] != b[(r, c)] {
-                return false;
-            }
-        }
-    }
-
-    true
 }
 
 quickcheck! {
@@ -325,9 +303,9 @@ quickcheck! {
         let c = t.2.clone();
         let zero = MatrixVec::<i32>::new(a.rows(), a.cols());
 
-        matrices_equal(&(&a + &b), &(&b + &a))
-        && matrices_equal(&(&a + &(&b + &c)), &(&(&a + &b) + &c))
-        && matrices_equal(&(&a + &zero), &a)
+        (&a + &b) == (&b + &a)
+        && (&a + &(&b + &c)) == (&(&a + &b) + &c)
+        && (&a + &zero) == a
     }
 
     fn qcheck_sub(t: A2Matrix<i32>) -> bool {
@@ -346,9 +324,9 @@ quickcheck! {
         // Third check: a - 0 = a
         let a_minus_zero = &a - &zero;
 
-        matrices_equal(&a_minus_b, &neg_b_minus_a)
-        && matrices_equal(&a_minus_a, &zero)
-        && matrices_equal(&a_minus_zero, &a)
+        a_minus_b == neg_b_minus_a
+        && a_minus_a == zero
+        && a_minus_zero == a
     }
 
     fn qcheck_mul(t: AMatrix<i32>) -> bool {
@@ -366,9 +344,9 @@ quickcheck! {
         let a_times_zero = a.dot(&zero_matrix);
 
         // Test matrix multiplication properties
-        matrices_equal(&a_times_zero, &zero_result)
-        && matrices_equal(&a.dot(&ident_cols), a)
-        && matrices_equal(&ident_rows.dot(a), a)
+        a_times_zero == zero_result
+        && a.dot(&ident_cols) == *a
+        && ident_rows.dot(a) == *a
     }
 
     fn qcheck_transpose_trait(t: AMatrix<i32>) -> bool {
@@ -378,7 +356,7 @@ quickcheck! {
         let transposed_trait = Transpose::transpose(a);
         let transposed_method = a.transpose();
 
-        matrices_equal(&transposed_trait, &transposed_method)
+        transposed_trait == transposed_method
     }
 
     fn qcheck_dot_trait(t: AMatrix<i32>) -> bool {
@@ -391,7 +369,7 @@ quickcheck! {
         let dot_trait = DotProduct::dot(a, &ident);
         let dot_method = a.dot(&ident);
 
-        matrices_equal(&dot_trait, &dot_method)
+        dot_trait == dot_method
     }
 
     fn qcheck_iter_methods(t: AMatrix<i32>) -> bool {
@@ -445,8 +423,7 @@ quickcheck! {
             *val *= 2;
         }
 
-        // Compare element by element
-        matrices_equal(&a, &b)
+        a == b
     }
 
     fn qcheck_transpose_properties(t: AMatrix<i32>) -> bool {

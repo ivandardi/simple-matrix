@@ -1,7 +1,7 @@
 use crate::storage::Storage;
 
 /// Fixed-size array storage implementation for `Storage` trait
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct StorageArray<T, const R: usize, const C: usize> {
     pub(crate) data: [[T; C]; R],
 }

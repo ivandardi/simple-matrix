@@ -4,7 +4,7 @@ use std::slice::{Iter, IterMut};
 use std::vec::IntoIter;
 
 /// Vector-based storage implementation for `Storage` trait
-#[derive(Clone)]
+#[derive(Clone, PartialEq, Eq)]
 pub struct StorageVec<T> {
     pub(crate) rows: NonZeroUsize,
     pub(crate) cols: NonZeroUsize,
