@@ -40,13 +40,13 @@ fn test_matrix_vec_from_iter() {
 }
 
 #[test]
-#[should_panic(expected = "Matrix dimensions must be positive")]
+#[should_panic(expected = "Matrix rows must be positive")]
 fn test_matrix_vec_from_iter_zero_rows() {
     MatrixVec::<i32>::from_iter(0, 3, 0..0);
 }
 
 #[test]
-#[should_panic(expected = "Matrix dimensions must be positive")]
+#[should_panic(expected = "Matrix columns must be positive")]
 fn test_matrix_vec_from_iter_zero_cols() {
     MatrixVec::<i32>::from_iter(3, 0, 0..0);
 }
@@ -97,7 +97,7 @@ fn test_matrix_vec_identity() {
 }
 
 #[test]
-#[should_panic(expected = "Matrix size must be positive")]
+#[should_panic(expected = "Matrix rows must be positive")]
 fn test_matrix_vec_identity_zero_size() {
     MatrixVec::<i32>::identity(0_usize, 1);
 }

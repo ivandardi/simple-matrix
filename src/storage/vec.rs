@@ -1,12 +1,13 @@
 use crate::storage::Storage;
+use std::num::NonZeroUsize;
 use std::slice::{Iter, IterMut};
 use std::vec::IntoIter;
 
 /// Vector-based storage implementation for `Storage` trait
 #[derive(Clone)]
 pub struct StorageVec<T> {
-    pub(crate) rows: usize,
-    pub(crate) cols: usize,
+    pub(crate) rows: NonZeroUsize,
+    pub(crate) cols: NonZeroUsize,
     pub(crate) data: Vec<T>,
 }
 
@@ -19,8 +20,10 @@ impl<T> StorageVec<T> {
     where
         T: Default,
     {
-        assert!(rows > 0 && cols > 0);
-        let size = rows * cols;
+        // Convert to NonZeroUsize, panicking if zero
+        let rows = NonZeroUsize::new(rows).expect("Matrix rows must be positive");
+        let cols = NonZeroUsize::new(cols).expect("Matrix columns must be positive");
+        let size = rows.get() * cols.get();
         let mut data = Vec::with_capacity(size);
 
         for _ in 0..size {
@@ -53,22 +56,22 @@ impl<T: std::fmt::Debug> std::fmt::Debug for StorageVec<T> {
 
 impl<T> Storage<T> for StorageVec<T> {
     fn rows(&self) -> usize {
-        self.rows
+        self.rows.get()
     }
 
     fn cols(&self) -> usize {
-        self.cols
+        self.cols.get()
     }
 
     fn get(&self, row: impl Into<usize>, col: impl Into<usize>) -> Option<&T> {
         let row = row.into();
         let col = col.into();
 
-        if row >= self.rows || col >= self.cols {
+        if row >= self.rows.get() || col >= self.cols.get() {
             return None;
         }
 
-        let idx = row * self.cols + col;
+        let idx = row * self.cols.get() + col;
         self.data.get(idx)
     }
 
@@ -76,11 +79,11 @@ impl<T> Storage<T> for StorageVec<T> {
         let row = row.into();
         let col = col.into();
 
-        if row >= self.rows || col >= self.cols {
+        if row >= self.rows.get() || col >= self.cols.get() {
             return None;
         }
 
-        let idx = row * self.cols + col;
+        let idx = row * self.cols.get() + col;
         self.data.get_mut(idx)
     }
 
@@ -88,32 +91,32 @@ impl<T> Storage<T> for StorageVec<T> {
         let row = row.into();
         let col = col.into();
 
-        if row >= self.rows || col >= self.cols {
+        if row >= self.rows.get() || col >= self.cols.get() {
             return None;
         }
 
-        let index = row * self.cols + col;
+        let index = row * self.cols.get() + col;
         Some(std::mem::replace(&mut self.data[index], value))
     }
 
     fn get_row(&self, row: impl Into<usize>) -> Option<Vec<&T>> {
         let row = row.into();
-        if row >= self.rows {
+        if row >= self.rows.get() {
             return None;
         }
 
         Some(
             self.data
                 .iter()
-                .skip(row * self.cols)
-                .take(self.cols)
+                .skip(row * self.cols.get())
+                .take(self.cols.get())
                 .collect::<Vec<_>>(),
         )
     }
 
     fn get_col(&self, col: impl Into<usize>) -> Option<Vec<&T>> {
         let col = col.into();
-        if col >= self.cols {
+        if col >= self.cols.get() {
             return None;
         }
 
@@ -121,8 +124,8 @@ impl<T> Storage<T> for StorageVec<T> {
             self.data
                 .iter()
                 .skip(col)
-                .step_by(self.cols)
-                .take(self.rows)
+                .step_by(self.cols.get())
+                .take(self.rows.get())
                 .collect::<Vec<_>>(),
         )
     }

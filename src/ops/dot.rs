@@ -38,6 +38,8 @@ where
             "Matrix dimensions incompatible for dot product"
         );
 
+        // Since we know the dimensions are non-zero from our Storage trait guarantees,
+        // we can safely create the result matrix
         let mut result = MatrixVec::new(self.rows(), rhs.cols());
 
         // Use checked operations to avoid panics

@@ -12,11 +12,15 @@ pub use vec::StorageVec;
 
 /// A trait that defines operations for matrix storage, such as get and set elements, get columns
 /// and rows, transpose, etc.
+///
+/// All implementations of this trait guarantee that rows and columns are positive (non-zero).
 pub trait Storage<T> {
     /// Get the number of rows in the storage.
+    /// This will always return a value > 0.
     fn rows(&self) -> usize;
 
     /// Get the number of columns in the storage.
+    /// This will always return a value > 0.
     fn cols(&self) -> usize;
 
     /// Get a reference to the element at the given row and column.

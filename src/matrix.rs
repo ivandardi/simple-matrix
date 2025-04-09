@@ -77,7 +77,6 @@ where
     where
         I: IntoIterator<Item = T>,
     {
-        assert!(rows > 0 && cols > 0, "Matrix dimensions must be positive");
         let mut data = StorageVec::new(rows, cols);
         let mut iter = iter.into_iter();
         let expected_elements = rows * cols;
@@ -137,7 +136,7 @@ where
         T: Default + Copy + PartialEq,
     {
         let size = size.into();
-        assert!(size > 0, "Matrix size must be positive");
+
         let mut data = StorageVec::new(size, size);
 
         for i in 0..size {

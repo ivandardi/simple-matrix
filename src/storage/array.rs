@@ -15,7 +15,8 @@ impl<T, const R: usize, const C: usize> StorageArray<T, R, C> {
     where
         T: Default + Copy,
     {
-        assert!(R > 0 && C > 0);
+        // Verify dimensions at compile time if possible, otherwise at runtime
+        assert!(R > 0 && C > 0, "Matrix dimensions must be positive");
         Self {
             data: [[T::default(); C]; R],
         }
